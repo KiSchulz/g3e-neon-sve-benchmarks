@@ -1,6 +1,12 @@
 #include <benchmark/benchmark.h>
 #include <unistd.h>
-#include <stdint.h>
+#include <cstdint>
+
+#ifndef __ARM_FEATURE_SVE
+#define __ARM_FREATURE_SVE
+#endif
+
+#include <arm_sve.h>
 
 uint64_t someCoolFunc(){
     uint64_t n = 0;
@@ -11,7 +17,7 @@ uint64_t someCoolFunc(){
 }
 
 static void bm_func(benchmark::State &state) {
-    for (auto _ : state) {
+    for ([[maybe_unused]] auto _ : state) {
         someCoolFunc();
     }
 }
