@@ -1,5 +1,6 @@
-#include "hello_kernel.h"
 #include <benchmark/benchmark.h>
+
+#include "hello_kernel.h"
 
 int main(int argc, char **argv) {
   if (argc == 1) {
