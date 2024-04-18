@@ -1,9 +1,7 @@
 #ifndef NEON_SVE_BENCH_HELLO_KERNEL_H
 #define NEON_SVE_BENCH_HELLO_KERNEL_H
 
-#include <benchmark/benchmark.h>
-#include <kernels/neon/neon_kernels.h>
-#include <kernels/sve/sve_kernels.h>
+#include "driver_common.h"
 
 static void bm_helloNeon(benchmark::State &state) {
   for (auto _ : state) {

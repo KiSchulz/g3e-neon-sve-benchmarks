@@ -19,8 +19,11 @@ set(BENCHMARK_ENABLE_TESTING OFF)
 set(BENCHMARK_ENABLE_LIBPFM ON)
 add_subdirectory(benchmark)
 
+add_subdirectory(googletest)
+include(GoogleTest)
+
 include_directories(.)
 
-add_subdirectory(FirstGBenchmarkTest)
-add_subdirectory(benchmark_driver)
 add_subdirectory(kernels)
+add_subdirectory(test_driver)
+add_subdirectory(benchmark_driver)

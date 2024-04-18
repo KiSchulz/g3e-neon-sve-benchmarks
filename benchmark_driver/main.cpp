@@ -1,6 +1,7 @@
 #include <benchmark/benchmark.h>
 
 #include "hello_kernel.h"
+#include "memcmp_kernel.h"
 
 int main(int argc, char **argv) {
   if (argc == 1) {
