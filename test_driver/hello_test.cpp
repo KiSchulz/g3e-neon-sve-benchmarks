@@ -1,11 +1,9 @@
 #include "test_common.h"
 
-#include <unistd.h>
-
 TEST(hello_test, Neon) {
-  EXPECT_EQ(getpid(), neon_kernels::helloNeon());
+  EXPECT_EQ(reference_kernels::helloReference(), neon_kernels::helloNeon());
 }
 
 TEST(hello_test, SVE) {
-  EXPECT_EQ(getpid(), sve_kernels::helloSVE());
+  EXPECT_EQ(reference_kernels::helloReference(), sve_kernels::helloSVE());
 }
