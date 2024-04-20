@@ -1,7 +1,7 @@
 #ifndef NEON_SVE_BENCH_HELLO_KERNEL_H
 #define NEON_SVE_BENCH_HELLO_KERNEL_H
 
-#include "driver_common.h"
+#include "benchmark_common.h"
 
 static void bm_helloNeon(benchmark::State &state) {
   for (auto _ : state) {
