@@ -5,13 +5,13 @@
 
 static void bm_helloNeon(benchmark::State &state) {
   for (auto _ : state) {
-    neon_kernels::helloNeon();
+    neon::helloNeon();
   }
 }
 
 static void bm_helloSVE(benchmark::State &state) {
   for (auto _ : state) {
-    sve_kernels::helloSVE();
+    sve::helloSVE();
   }
 }
 

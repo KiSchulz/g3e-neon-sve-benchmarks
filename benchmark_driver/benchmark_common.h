@@ -5,4 +5,7 @@
 #include <kernels/neon/neon_kernels.h>
 #include <kernels/sve/sve_kernels.h>
 
+namespace neon = neon_kernels;
+namespace sve = sve_kernels;
+
 #endif // NEON_SVE_BENCH_BENCHMARK_COMMON_H

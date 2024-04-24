@@ -5,13 +5,13 @@
 
 static void bm_memcmpNeon(benchmark::State &state) {
   for (auto _ : state) {
-    neon_kernels::memcmp(nullptr, nullptr, 0);
+    neon::memcmp(nullptr, nullptr, 0);
   }
 }
 
 static void bm_memcmpSVE(benchmark::State &state) {
   for (auto _ : state) {
-    sve_kernels::memcmp(nullptr, nullptr, 0);
+    sve::memcmp(nullptr, nullptr, 0);
   }
 }
 
