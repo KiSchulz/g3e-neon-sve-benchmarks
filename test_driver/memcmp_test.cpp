@@ -19,6 +19,10 @@ protected:
 
   static bool memcmpResultEQ(int a, int b) { return (a < 0 && b < 0) || (a > 0 && b > 0) || (a == 0 && b == 0); }
 
+  template <class Func> void nullptrTest(Func f) {
+    ASSERT_EQ(ref::memcmp(nullptr, nullptr, 0), f(nullptr, nullptr, 0));
+  }
+
   template <class Func> void simpleEQTest(Func f) {
     const std::size_t len = 64;
     const auto key = getRandomKey(len);
@@ -26,24 +30,28 @@ protected:
   }
 
   template <class Func> void variableLenRandomKeyTest(Func f, std::size_t min_len, std::size_t max_len) {
-    for (std::size_t len = 1; len < max_len; len++) {
+    for (std::size_t len = min_len; len < max_len; len++) {
       const auto a = getRandomKey(len);
       const auto b = getRandomKey(len);
 
-      ASSERT_TRUE(memcmpResultEQ(ref::memcmp(a.get(), b.get(), len), neon::memcmp(a.get(), b.get(), len)));
-      ASSERT_TRUE(memcmpResultEQ(neon::memcmp(a.get(), a.get(), len), 0));
-      ASSERT_TRUE(memcmpResultEQ(neon::memcmp(b.get(), b.get(), len), 0));
-      ASSERT_TRUE(memcmpResultEQ(ref::memcmp(b.get(), a.get(), len), neon::memcmp(b.get(), a.get(), len)));
+      ASSERT_TRUE(memcmpResultEQ(ref::memcmp(a.get(), b.get(), len), f(a.get(), b.get(), len))) << len;
+      ASSERT_TRUE(memcmpResultEQ(f(a.get(), a.get(), len), 0)) << len;
+      ASSERT_TRUE(memcmpResultEQ(f(b.get(), b.get(), len), 0)) << len;
+      ASSERT_TRUE(memcmpResultEQ(ref::memcmp(b.get(), a.get(), len), f(b.get(), a.get(), len))) << len;
     }
   }
 };
 
-TEST(memcmp_test, Neon_nullptr) { ASSERT_EQ(ref::memcmp(nullptr, nullptr, 0), neon::memcmp(nullptr, nullptr, 0)); }
-
-TEST(memcmp_test, SVE_nullptr) { ASSERT_EQ(ref::memcmp(nullptr, nullptr, 0), sve::memcmp(nullptr, nullptr, 0)); }
+TEST_F(MemcmpTest, Neon_nullptrTest) { nullptrTest(neon::memcmp); }
+TEST_F(MemcmpTest, SVE_nullptrTetst) { nullptrTest(sve::memcmp); }
 
 TEST_F(MemcmpTest, Neon_simpleEQTest) { simpleEQTest(neon::memcmp); }
+TEST_F(MemcmpTest, SVE_simpleEQTest) { simpleEQTest(sve::memcmp); }
 
 TEST_F(MemcmpTest, Neon_shortKeyTest) { variableLenRandomKeyTest(neon::memcmp, 1, 128); }
+TEST_F(MemcmpTest, SVE_shortKeyTest) { variableLenRandomKeyTest(sve::memcmp, 1, 128); }
 
 TEST_F(MemcmpTest, Neon_longKeyTest) { variableLenRandomKeyTest(neon::memcmp, 1 << 8, 1 << 12); }
+TEST_F(MemcmpTest, SVE_longKeyTest) { variableLenRandomKeyTest(sve::memcmp, 1 << 8, 1 << 12); }
+
+// TODO add test that uses keys with common prefix
