@@ -25,7 +25,7 @@ public:
 
   static bool memcmpResultEQ(int a, int b) { return (a < 0 && b < 0) || (a > 0 && b > 0) || (a == 0 && b == 0); }
 
-  void nullptrTest(Func f) { ASSERT_EQ(ref::memcmp(nullptr, nullptr, 0), f(nullptr, nullptr, 0)); }
+  static void nullptrTest(Func f) { ASSERT_EQ(ref::memcmp(nullptr, nullptr, 0), f(nullptr, nullptr, 0)); }
 
   void simpleEQTest(Func f) {
     const std::size_t len = 64;
@@ -61,10 +61,11 @@ public:
   }
 };
 
-TEST_P(MemcmpTest, nullptrTest) { nullptrTest(GetParam()); }
-TEST_P(MemcmpTest, simpleEQTest) { simpleEQTest(GetParam()); }
-TEST_P(MemcmpTest, shortKeyTest) { variableLenRandomKeyTest(GetParam(), 1, 128); }
-TEST_P(MemcmpTest, longKeyTest) { variableLenRandomKeyTest(GetParam(), 1 << 8, 1 << 12); }
-TEST_P(MemcmpTest, variablePrefixLenTest) { variablePrefixLenKeyTest(GetParam(), 1 << 10); }
+TEST_P(MemcmpTest, Nullptr) { nullptrTest(GetParam()); }
+TEST_P(MemcmpTest, SimpleEQ) { simpleEQTest(GetParam()); }
+TEST_P(MemcmpTest, ShortKeys) { variableLenRandomKeyTest(GetParam(), 1, 128); }
+TEST_P(MemcmpTest, LongKeys) { variableLenRandomKeyTest(GetParam(), 1 << 8, 1 << 12); }
+TEST_P(MemcmpTest, VariablePrefixLengthKeys) { variablePrefixLenKeyTest(GetParam(), 1 << 10); }
 
-INSTANTIATE_TEST_SUITE_P(CoolPrefix, MemcmpTest, testing::Values(&neon::memcmp, &sve::memcmp));
+INSTANTIATE_TEST_SUITE_P(Kernels, MemcmpTest, testing::Values(&neon::memcmp, &sve::memcmp),
+                         [](const auto &info) { return info.index == 0 ? "Neon" : "SVE"; });
