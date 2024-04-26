@@ -1,28 +1,13 @@
 #include "test_common.h"
 
-#include <algorithm>
+#include "common/random_data_generator.h"
+
 #include <memory>
-#include <random>
 
 using Func = int (*)(const void *, const void *, std::size_t);
 
-class MemcmpTest : public testing::TestWithParam<Func> {
+class MemcmpTest : public testing::TestWithParam<Func>, public RandomDataGenerator {
 public:
-  std::default_random_engine engine{0};
-  std::uniform_int_distribution<char> dist{0, 255};
-
-  std::shared_ptr<char> getRandArr(std::size_t length, const char *prefix = nullptr, std::size_t prefix_len = 0) {
-    std::shared_ptr<char> arr{new char[length]};
-
-    if (prefix != nullptr && prefix_len > 0) {
-      assert(prefix_len <= length);
-      std::copy(prefix, prefix + prefix_len, arr.get());
-    }
-    std::generate(arr.get() + prefix_len, arr.get() + length, [this]() { return dist(engine); });
-
-    return arr;
-  }
-
   static bool memcmpResultEQ(int a, int b) { return (a < 0 && b < 0) || (a > 0 && b > 0) || (a == 0 && b == 0); }
 
   static void nullptrTest(Func f) { ASSERT_EQ(ref::memcmp(nullptr, nullptr, 0), f(nullptr, nullptr, 0)); }
