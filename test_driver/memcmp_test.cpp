@@ -53,4 +53,4 @@ TEST_P(MemcmpTest, LongKeys) { variableLenRandomKeyTest(GetParam(), 1 << 8, 1 <<
 TEST_P(MemcmpTest, VariablePrefixLengthKeys) { variablePrefixLenKeyTest(GetParam(), 1 << 10); }
 
 INSTANTIATE_TEST_SUITE_P(Kernels, MemcmpTest, testing::Values(&neon::memcmp, &sve::memcmp),
-                         [](const auto &info) { return info.index == 0 ? "Neon" : "SVE"; });
+                         [](const auto &paramInfo) { return paramInfo.index == 0 ? "Neon" : "SVE"; });
