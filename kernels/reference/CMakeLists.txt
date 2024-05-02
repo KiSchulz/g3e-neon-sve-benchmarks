@@ -1,3 +1,4 @@
 add_library(reference_kernels
-        helloReference.cpp
-        memcmpReference.cpp)
+        hello.cpp
+        memcmp.cpp
+        nBody_step.cpp)

@@ -7,7 +7,7 @@
 
 struct RandomDataGenerator {
   std::default_random_engine engine{0};
-  std::uniform_int_distribution<char> dist{0, 255};
+  std::uniform_int_distribution<char> uni_dist{0, 255};
 
   std::shared_ptr<char> getRandArr(std::size_t length, const char *prefix = nullptr, std::size_t prefix_len = 0) {
     std::shared_ptr<char> arr{new char[length]};
@@ -22,7 +22,7 @@ struct RandomDataGenerator {
   }
 
   void initArrWithRand(char *arr, std::size_t length) {
-    std::generate(arr, arr + length, [this]() { return dist(engine); });
+    std::generate(arr, arr + length, [this]() { return uni_dist(engine); });
   }
 };
 

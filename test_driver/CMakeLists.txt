@@ -2,7 +2,8 @@ enable_testing()
 
 add_executable(test_driver
                 hello_test.cpp
-                memcmp_test.cpp)
+                memcmp_test.cpp
+                nBody_test.cpp)
 
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
