@@ -2,17 +2,18 @@
 
 #include <cmath>
 
+// function is based on the version form DOI:10.1109/CLUSTER.2017.93
 void reference_kernels::nBody_step(double *px, double *py, double *pz, double *vx, double *vy, double *vz,
                                    const double *m, double dt, std::size_t len) {
   for (std::size_t i = 0; i < len; i++) {
     double ax = 0, ay = 0, az = 0;
     for (std::size_t j = 0; j < len; j++) {
       // compute distance between the two bodies on each axis
-      double dx = px[i] - px[j];
-      double dy = py[i] - py[j];
-      double dz = pz[i] - pz[j];
+      double dx = px[j] - px[i];
+      double dy = py[j] - py[i];
+      double dz = pz[j] - pz[i];
 
-      double r2 = (dx * dx) + (dy * dy) + (dz * dz);
+      double r2 = (dx * dx) + (dy * dy) + (dz * dz) + DEPSILON;
       // compute the Euclidean distance between the two bodies
       double r = std::sqrt(r2);
 
