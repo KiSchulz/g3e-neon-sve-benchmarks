@@ -6,7 +6,7 @@
 #include "common/random_data_generator.h"
 
 struct BM_memcmp_args {
-  static constexpr int64_t min_prefix_length = 1;        // in byte
+  static constexpr int64_t min_prefix_length = 1;       // in byte
   static constexpr int64_t max_prefix_length = 1 << 29; // in byte
   static constexpr int range_multiplier = 2;
   static constexpr uint64_t buff_alignment = 4096;
@@ -17,8 +17,8 @@ template <class... Args> void BM_aligned_memcmp(benchmark::State &state, Args &&
   const auto func = std::get<0>(args_tuple);
 
   static RandomDataGenerator gen;
-  char *buff1 = new(std::align_val_t(std::get<1>(args_tuple))) char[BM_memcmp_args::max_prefix_length];
-  char *buff2 = new(std::align_val_t(std::get<1>(args_tuple))) char[BM_memcmp_args::max_prefix_length];
+  char *buff1 = new (std::align_val_t(std::get<1>(args_tuple))) char[BM_memcmp_args::max_prefix_length];
+  char *buff2 = new (std::align_val_t(std::get<1>(args_tuple))) char[BM_memcmp_args::max_prefix_length];
 
   // generate common prefix for buff1 and buff2
   const std::size_t pref_len = state.range(0);
@@ -39,7 +39,7 @@ template <class... Args> void BM_aligned_memcmp(benchmark::State &state, Args &&
 }
 
 BENCHMARK_CAPTURE(BM_aligned_memcmp, Ref, &ref::memcmp, BM_memcmp_args::buff_alignment)
-->RangeMultiplier(BM_memcmp_args::range_multiplier)
+    ->RangeMultiplier(BM_memcmp_args::range_multiplier)
     ->Range(BM_memcmp_args::min_prefix_length, BM_memcmp_args::max_prefix_length);
 BENCHMARK_CAPTURE(BM_aligned_memcmp, Neon, &neon::memcmp, BM_memcmp_args::buff_alignment)
     ->RangeMultiplier(BM_memcmp_args::range_multiplier)

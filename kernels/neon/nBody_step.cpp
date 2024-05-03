@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-// TODO add fast math check
+template <bool fastMath>
 void neon_kernels::nBody_step(double *px, double *py, double *pz, double *vx, double *vy, double *vz, const double *m,
                               double dt, std::size_t len) {
   constexpr std::size_t num_lanes = reg_width / sizeof(*px);
@@ -10,17 +10,16 @@ void neon_kernels::nBody_step(double *px, double *py, double *pz, double *vx, do
   const std::size_t simd_len = (odd_len ? len - 1 : len);
   const std::size_t last = len - 1;
   // TODO try to improve the constant situation if necessary
-  const float64x2_t vEpsilon = {EPSILON_D, EPSILON_D};
-  const float64x2_t vG = {physics::G, physics::G};
+  const float64x2_t vEpsilon = vdupq_n_f64(EPSILON_D);
+  const float64x2_t vG = vdupq_n_f64(physics::G);
 
   // TODO use pointers directly instead of indices if not optimized
   for (std::size_t i = 0; i < len; i++) {
-    // TODO optimize the initialization of the values
-    float64x2_t ax = {0, 0}, ay = {0, 0}, az = {0, 0};
+    float64x2_t ax = vdupq_n_f64(0), ay = vdupq_n_f64(0), az = vdupq_n_f64(0);
 
-    const float64x2_t px_i = {px[i], px[i]};
-    const float64x2_t py_i = {py[i], py[i]};
-    const float64x2_t pz_i = {pz[i], pz[i]};
+    const float64x2_t px_i = vdupq_n_f64(px[i]);
+    const float64x2_t py_i = vdupq_n_f64(py[i]);
+    const float64x2_t pz_i = vdupq_n_f64(pz[i]);
     for (std::size_t j = 0; j < simd_len; j += num_lanes) {
       const float64x2_t px_j = vld1q_f64(px + j);
       const float64x2_t py_j = vld1q_f64(py + j);
@@ -30,17 +29,24 @@ void neon_kernels::nBody_step(double *px, double *py, double *pz, double *vx, do
       const float64x2_t dy = vsubq_f64(py_j, py_i);
       const float64x2_t dz = vsubq_f64(pz_j, pz_i);
 
-      // TODO look at scalar multiply add for epsilon
       float64x2_t r2 = vfmaq_f64(vEpsilon, dx, dx);
       r2 = vfmaq_f64(r2, dy, dy);
       r2 = vfmaq_f64(r2, dz, dz);
 
-      const float64x2_t r = vsqrtq_f64(r2);
-
       const float64x2_t m_j = vld1q_f64(m + j);
       float64x2_t acc = vmulq_f64(vG, m_j);
-      acc = vdivq_f64(acc, r2);
-      const float64x2_t ar = vdivq_f64(acc, r);
+
+      float64x2_t ar;
+      if constexpr (fastMath) {
+        float64x2_t r = vrsqrteq_f64(r2);
+        r2 = vrecpeq_f64(r2);
+        acc = vmulq_f64(acc, r2);
+        ar = vmulq_f64(acc, r);
+      } else {
+        const float64x2_t r = vsqrtq_f64(r2);
+        acc = vdivq_f64(acc, r2);
+        ar = vdivq_f64(acc, r);
+      }
 
       ax = vfmaq_f64(ax, dx, ar);
       ay = vfmaq_f64(ay, dy, ar);
@@ -94,3 +100,8 @@ void neon_kernels::nBody_step(double *px, double *py, double *pz, double *vx, do
     pz[last] += vz[last] * dt;
   }
 }
+
+template void neon_kernels::nBody_step<false>(double *px, double *py, double *pz, double *vx, double *vy, double *vz,
+                                              const double *m, double dt, std::size_t len);
+template void neon_kernels::nBody_step<true>(double *px, double *py, double *pz, double *vx, double *vy, double *vz,
+                                             const double *m, double dt, std::size_t len);

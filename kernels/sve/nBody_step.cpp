@@ -1,5 +1,6 @@
 #include "sve_common.h"
 
+template <bool fastMath>
 void sve_kernels::nBody_step(double *px, double *py, double *pz, double *vx, double *vy, double *vz, const double *m,
                              double dt, std::size_t len) {
   const uint64_t vl = svcntd();
@@ -7,6 +8,7 @@ void sve_kernels::nBody_step(double *px, double *py, double *pz, double *vx, dou
   const svfloat64_t vG = svdup_f64(physics::G);
   const svfloat64_t vDt = svdup_f64(dt);
 
+  // TODO add fast math mode
   for (std::size_t i = 0; i < len; i++) {
     svfloat64_t ax = svdup_f64(0), ay = svdup_f64(0), az = svdup_f64(0);
     const svfloat64_t px_i = svdup_f64(px[i]), py_i = svdup_f64(py[i]), pz_i = svdup_f64(pz[i]);
@@ -26,12 +28,20 @@ void sve_kernels::nBody_step(double *px, double *py, double *pz, double *vx, dou
       r2 = svmad_f64_x(pred, dy, dy, r2);
       r2 = svmad_f64_x(pred, dz, dz, r2);
 
-      const svfloat64_t r = svsqrt_f64_x(pred, r2);
-
       const svfloat64_t m_j = svld1(pred, m + j);
       svfloat64_t acc = svmul_f64_x(pred, vG, m_j);
-      acc = svdiv_f64_x(pred, acc, r2);
-      const svfloat64_t ar = svdiv_f64_x(pred, acc, r);
+
+      svfloat64_t ar;
+      if constexpr (fastMath) {
+        const svfloat64_t r = svrsqrte_f64(r2);
+        r2 = svrecpe_f64(r2);
+        acc = svmul_f64_x(pred, acc, r2);
+        ar = svmul_f64_x(pred, acc, r);
+      } else {
+        const svfloat64_t r = svsqrt_f64_x(pred, r2);
+        acc = svdiv_f64_x(pred, acc, r2);
+        ar = svdiv_f64_x(pred, acc, r);
+      }
 
       const svfloat64_t ax_i = svmad_f64_z(pred, dx, ar, ax);
       const svfloat64_t ay_i = svmad_f64_z(pred, dy, ar, ay);
@@ -77,3 +87,8 @@ void sve_kernels::nBody_step(double *px, double *py, double *pz, double *vx, dou
     pred = svwhilelt_b64_u64(i, len);
   }
 }
+
+template void sve_kernels::nBody_step<false>(double *px, double *py, double *pz, double *vx, double *vy, double *vz,
+                                             const double *m, double dt, std::size_t len);
+template void sve_kernels::nBody_step<true>(double *px, double *py, double *pz, double *vx, double *vy, double *vz,
+                                            const double *m, double dt, std::size_t len);
