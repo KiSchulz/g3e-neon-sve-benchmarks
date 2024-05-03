@@ -33,8 +33,10 @@ void reference_kernels::nBody_step(double *px, double *py, double *pz, double *v
     vx[i] += ax * dt;
     vy[i] += ay * dt;
     vz[i] += az * dt;
+  }
 
-    // apply the updated velocity to the position of i
+  // apply the updated velocities to the positions
+  for (std::size_t i = 0; i < len; i++) {
     px[i] += vx[i] * dt;
     py[i] += vy[i] * dt;
     pz[i] += vz[i] * dt;
