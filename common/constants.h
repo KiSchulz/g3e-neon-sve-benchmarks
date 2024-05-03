@@ -7,6 +7,6 @@ namespace physics {
 constexpr double G = 6.67430e-11; // gravitational constant
 }
 
-constexpr double DEPSILON = std::numeric_limits<double>::epsilon();
+constexpr double EPSILON_D = std::numeric_limits<double>::epsilon();
 
 #endif // NEON_SVE_BENCH_CONSTANTS_H

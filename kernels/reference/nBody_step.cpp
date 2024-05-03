@@ -8,18 +8,21 @@ void reference_kernels::nBody_step(double *px, double *py, double *pz, double *v
   for (std::size_t i = 0; i < len; i++) {
     double ax = 0, ay = 0, az = 0;
     for (std::size_t j = 0; j < len; j++) {
+      // this check is optional
+      if (i == j)
+        continue;
       // compute distance between the two bodies on each axis
-      double dx = px[j] - px[i];
-      double dy = py[j] - py[i];
-      double dz = pz[j] - pz[i];
+      const double dx = px[j] - px[i];
+      const double dy = py[j] - py[i];
+      const double dz = pz[j] - pz[i];
 
-      double r2 = (dx * dx) + (dy * dy) + (dz * dz) + DEPSILON;
+      const double r2 = (dx * dx) + (dy * dy) + (dz * dz) + EPSILON_D;
       // compute the Euclidean distance between the two bodies
-      double r = std::sqrt(r2);
+      const double r = std::sqrt(r2);
 
       // compute the acceleration body i experiences from body j
-      double acc = physics::G * m[j] / r2;
-      double ar = acc / r;
+      const double acc = physics::G * m[j] / r2;
+      const double ar = acc / r;
 
       // accumulate the acceleration that body i experiences
       ax += dx * ar;

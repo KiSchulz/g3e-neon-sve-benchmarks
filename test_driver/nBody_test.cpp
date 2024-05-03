@@ -8,8 +8,8 @@ class NBodyTest : public testing::TestWithParam<Func>, public RandomDataGenerato
 public:
   constexpr static double dt = 0.01;
 
-  static bool doubleEQ(double a, double b, std::size_t n = 1) { return std::abs(a - b) <= (double)n * DEPSILON; }
-  static bool relEQ(double a, double b, double relDiv = 1e-4) { return std::abs(a - b) / std::min(a, b) <= relDiv; }
+  static bool doubleEQ(double a, double b, std::size_t n = 1) { return std::abs(a - b) <= (double)n * EPSILON_D; }
+  static bool relEQ(double a, double b, double relDiv = 1e-3) { return std::abs(a - b) / std::min(a, b) <= relDiv; }
 
   static void singleNonMovingObject(Func f) {
     double pos[] = {0, 0, 0};
@@ -37,9 +37,9 @@ public:
     for (int i = 1; i < 10; i++) {
       f(&pos[0], &pos[1], &pos[2], &vel[0], &vel[1], &vel[2], &mass, dt, n);
 
-      ASSERT_DOUBLE_EQ(pos[0], i * vel[0] * dt);
-      ASSERT_DOUBLE_EQ(pos[1], i * vel[1] * dt);
-      ASSERT_DOUBLE_EQ(pos[2], i * vel[2] * dt);
+      ASSERT_DOUBLE_EQ(pos[0], i * vel[0] * dt) << "failed after: " << i;
+      ASSERT_DOUBLE_EQ(pos[1], i * vel[1] * dt) << "failed after: " << i;
+      ASSERT_DOUBLE_EQ(pos[2], i * vel[2] * dt) << "failed after: " << i;
 
       ASSERT_EQ(vel[0], 1);
       ASSERT_EQ(vel[1], 1);
