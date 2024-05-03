@@ -33,6 +33,19 @@ struct RandomDataGenerator {
       return uni_dist(engine);
     });
   }
+
+  void initNBodySystem(double *px, double *py, double *pz, double *vx, double *vy, double *vz, double *mass,
+                       std::size_t size) {
+    initArrWithRandInRangeD(px, size, -10, 10);
+    initArrWithRandInRangeD(py, size, -10, 10);
+    initArrWithRandInRangeD(pz, size, -10, 10);
+
+    initArrWithRandInRangeD(vx, size, -10, 10);
+    initArrWithRandInRangeD(vy, size, -10, 10);
+    initArrWithRandInRangeD(vz, size, -10, 10);
+
+    initArrWithRandInRangeD(mass, size, 1, 1e9);
+  }
 };
 
 #endif // NEON_SVE_BENCH_RANDOM_DATA_GENERATOR_H

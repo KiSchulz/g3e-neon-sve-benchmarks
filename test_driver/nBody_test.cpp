@@ -2,6 +2,8 @@
 
 #include "common/random_data_generator.h"
 
+#include <cstring>
+
 using Func = void (*)(double *, double *, double *, double *, double *, double *, const double *, double, std::size_t);
 
 class NBodyTest : public testing::TestWithParam<Func>, public RandomDataGenerator {
@@ -85,19 +87,14 @@ public:
     double x_pos[n];
     double y_pos[n];
     double z_pos[n];
-    initArrWithRandInRangeD(x_pos, n, -10, 10);
-    initArrWithRandInRangeD(y_pos, n, -10, 10);
-    initArrWithRandInRangeD(z_pos, n, -10, 10);
 
     double x_vel[n];
     double y_vel[n];
     double z_vel[n];
-    initArrWithRandInRangeD(x_vel, n, -10, 10);
-    initArrWithRandInRangeD(y_vel, n, -10, 10);
-    initArrWithRandInRangeD(z_vel, n, -10, 10);
 
     double mass[n];
-    initArrWithRandInRangeD(mass, n, 1, 1e9);
+
+    initNBodySystem(x_pos, y_pos, z_pos, x_vel, y_vel, z_vel, mass, n);
 
     auto computeEKin = [&]() {
       double E = 0;
@@ -132,12 +129,57 @@ public:
       last = current;
     }
   }
+
+  void compareAgainstRef(Func f) {
+    const std::size_t n = 127;
+    auto *sysMem = new double[n * 7];
+    double *px = sysMem;
+    double *py = sysMem + n;
+    double *pz = sysMem + 2 * n;
+    double *vx = sysMem + 3 * n;
+    double *vy = sysMem + 4 * n;
+    double *vz = sysMem + 5 * n;
+    double *m = sysMem + 6 * n;
+
+    initNBodySystem(px, py, pz, vx, vy, vz, m, n);
+
+    auto *sysMem2 = new double[n * 7];
+    double *px2 = sysMem2;
+    double *py2 = sysMem2 + n;
+    double *pz2 = sysMem2 + 2 * n;
+    double *vx2 = sysMem2 + 3 * n;
+    double *vy2 = sysMem2 + 4 * n;
+    double *vz2 = sysMem2 + 5 * n;
+    double *m2 = sysMem2 + 6 * n;
+
+    std::copy(sysMem, sysMem + n * 7, sysMem2);
+
+    for (std::size_t i = 0; i < 1024; i++) {
+      ref::nBody_step(px, py, pz, vx, vy, vz, m, dt, n);
+      f(px2, py2, pz2, vx2, vy2, vz2, m2, dt, n);
+
+      for (std::size_t j = 0; j < n; j++) {
+       const double maxDeviation = 1e-12;
+       ASSERT_PRED2([&](double a, double b) { return relEQ(a, b, maxDeviation); },px[j], px2[j]);
+       ASSERT_PRED2([&](double a, double b) { return relEQ(a, b, maxDeviation); },py[j], py2[j]);
+       ASSERT_PRED2([&](double a, double b) { return relEQ(a, b, maxDeviation); },pz[j], pz2[j]);
+
+       ASSERT_PRED2([&](double a, double b) { return relEQ(a, b, maxDeviation); },vx[j], vx2[j]);
+       ASSERT_PRED2([&](double a, double b) { return relEQ(a, b, maxDeviation); },vy[j], vy2[j]);
+       ASSERT_PRED2([&](double a, double b) { return relEQ(a, b, maxDeviation); },vz[j], vz2[j]);
+      }
+    }
+
+    delete[] sysMem;
+    delete[] sysMem2;
+  }
 };
 
 TEST_P(NBodyTest, singleNonMovingObject) { singleNonMovingObject(GetParam()); }
 TEST_P(NBodyTest, singleConstVelObject) { singleConstVelObject(GetParam()); }
 TEST_P(NBodyTest, binarySystem) { binarySystem(GetParam()); }
 TEST_P(NBodyTest, systemEnergyConservation) { systemEnergyConservation(GetParam()); }
+TEST_P(NBodyTest, compareAgainstRef) { compareAgainstRef(GetParam()); }
 
 INSTANTIATE_TEST_SUITE_P(Kernels, NBodyTest, testing::Values(&ref::nBody_step, &neon::nBody_step, &sve::nBody_step),
                          [](const auto &paramInfo) {

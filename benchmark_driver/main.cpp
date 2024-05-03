@@ -5,6 +5,7 @@
 
 #include "hello_benchmark.h"
 #include "memcmp_benchmark.h"
+#include "nBody_step_benchmark.h"
 
 int main(int argc, char **argv) {
   const auto start = std::chrono::high_resolution_clock::now();
