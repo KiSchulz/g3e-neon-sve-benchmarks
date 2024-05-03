@@ -18,9 +18,9 @@ void neon_kernels::nBody_step(double *px, double *py, double *pz, double *vx, do
     // TODO optimize the initialization of the values
     float64x2_t ax = {0, 0}, ay = {0, 0}, az = {0, 0};
 
-    float64x2_t px_i = {px[i], px[i]};
-    float64x2_t py_i = {py[i], py[i]};
-    float64x2_t pz_i = {pz[i], pz[i]};
+    const float64x2_t px_i = {px[i], px[i]};
+    const float64x2_t py_i = {py[i], py[i]};
+    const float64x2_t pz_i = {pz[i], pz[i]};
     for (std::size_t j = 0; j < simd_len; j += num_lanes) {
       const float64x2_t px_j = vld1q_f64(px + j);
       const float64x2_t py_j = vld1q_f64(py + j);
@@ -38,7 +38,8 @@ void neon_kernels::nBody_step(double *px, double *py, double *pz, double *vx, do
       const float64x2_t r = vsqrtq_f64(r2);
 
       const float64x2_t m_j = vld1q_f64(m + j);
-      const float64x2_t acc = vmulq_f64(vG, m_j);
+      float64x2_t acc = vmulq_f64(vG, m_j);
+      acc = vdivq_f64(acc, r2);
       const float64x2_t ar = vdivq_f64(acc, r);
 
       ax = vfmaq_f64(ax, dx, ar);
@@ -49,7 +50,7 @@ void neon_kernels::nBody_step(double *px, double *py, double *pz, double *vx, do
     double sAy = vaddvq_f64(ay);
     double sAz = vaddvq_f64(az);
 
-    // loop tail
+    // scalar loop tail
     if (odd_len) {
       const double dx = px[last] - px[i];
       const double dy = py[last] - py[i];

@@ -9,7 +9,7 @@ public:
   constexpr static double dt = 0.01;
 
   static bool doubleEQ(double a, double b, std::size_t n = 1) { return std::abs(a - b) <= (double)n * EPSILON_D; }
-  static bool relEQ(double a, double b, double relDiv = 3e-4) { return std::abs(a - b) / std::min(a, b) <= relDiv; }
+  static bool relEQ(double a, double b, double relDiv = 2e-5) { return std::abs(a - b) / std::min(a, b) <= relDiv; }
 
   static void singleNonMovingObject(Func f) {
     double pos[] = {0, 0, 0};
