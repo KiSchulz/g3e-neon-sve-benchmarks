@@ -8,6 +8,7 @@ struct Vec3f {
 
   float operator[](std::size_t i) const { return v[i]; }
   float &operator[](std::size_t i) { return v[i]; }
+  Vec3f operator-(const Vec3f &o) const { return {v[0] - o.v[0], v[1] - o.v[1], v[2] - o.v[2]}; }
 
   [[nodiscard]] float norm() const { return std::sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]); }
   [[nodiscard]] Vec3f normalize() const { return {v[0] / norm(), v[1] / norm(), v[2] / norm()}; }
