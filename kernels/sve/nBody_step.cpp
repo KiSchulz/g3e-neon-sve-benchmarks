@@ -7,15 +7,14 @@ void sve_kernels::nBody_step(double *px, double *py, double *pz, double *vx, dou
   const svfloat64_t vEpsilon = svdup_f64(EPSILON_D);
   const svfloat64_t vG = svdup_f64(physics::G);
   const svfloat64_t vDt = svdup_f64(dt);
+  const svbool_t vTrue = svptrue_b64();
 
-  // TODO add fast math mode
   for (std::size_t i = 0; i < len; i++) {
     svfloat64_t ax = svdup_f64(0), ay = svdup_f64(0), az = svdup_f64(0);
     const svfloat64_t px_i = svdup_f64(px[i]), py_i = svdup_f64(py[i]), pz_i = svdup_f64(pz[i]);
 
-    std::size_t j = 0;
-    svbool_t pred = svwhilelt_b64_u64(j, len);
-    while (j < len) {
+    for (std::size_t j = 0; j < len; j += vl) {
+      const svbool_t pred = svwhilelt_b64_u64(j, len);
       const svfloat64_t px_j = svld1(pred, px + j);
       const svfloat64_t py_j = svld1(pred, py + j);
       const svfloat64_t pz_j = svld1(pred, pz + j);
@@ -36,25 +35,17 @@ void sve_kernels::nBody_step(double *px, double *py, double *pz, double *vx, dou
         const svfloat64_t r = svrsqrte_f64(r2);
         r2 = svrecpe_f64(r2);
         acc = svmul_f64_x(pred, acc, r2);
-        ar = svmul_f64_x(pred, acc, r);
+        ar = svmul_f64_z(pred, acc, r);
       } else {
         const svfloat64_t r = svsqrt_f64_x(pred, r2);
         acc = svdiv_f64_x(pred, acc, r2);
-        ar = svdiv_f64_x(pred, acc, r);
+        ar = svdiv_f64_z(pred, acc, r);
       }
 
-      const svfloat64_t ax_i = svmad_f64_z(pred, dx, ar, ax);
-      const svfloat64_t ay_i = svmad_f64_z(pred, dy, ar, ay);
-      const svfloat64_t az_i = svmad_f64_z(pred, dz, ar, az);
-
-      ax = svsel(pred, ax_i, ax);
-      ay = svsel(pred, ay_i, ay);
-      az = svsel(pred, az_i, az);
-
-      j += vl;
-      pred = svwhilelt_b64_u64(j, len);
+      ax = svmad_f64_x(vTrue, dx, ar, ax);
+      ay = svmad_f64_x(vTrue, dy, ar, ay);
+      az = svmad_f64_x(vTrue, dz, ar, az);
     }
-    const svbool_t vTrue = svptrue_b64();
     double sAx = svadda(vTrue, 0, ax);
     double sAy = svadda(vTrue, 0, ay);
     double sAz = svadda(vTrue, 0, az);
@@ -64,9 +55,8 @@ void sve_kernels::nBody_step(double *px, double *py, double *pz, double *vx, dou
     vz[i] += sAz * dt;
   }
 
-  std::size_t i = 0;
-  svbool_t pred = svwhilelt_b64_u64(i, len);
-  while (i < len) {
+  for (std::size_t i = 0; i < len; i += vl) {
+    const svbool_t pred = svwhilelt_b64_u64(i, len);
     svfloat64_t px_i = svld1(pred, px + i);
     svfloat64_t py_i = svld1(pred, py + i);
     svfloat64_t pz_i = svld1(pred, pz + i);
@@ -82,9 +72,6 @@ void sve_kernels::nBody_step(double *px, double *py, double *pz, double *vx, dou
     svst1(pred, px + i, px_i);
     svst1(pred, py + i, py_i);
     svst1(pred, pz + i, pz_i);
-
-    i += vl;
-    pred = svwhilelt_b64_u64(i, len);
   }
 }
 

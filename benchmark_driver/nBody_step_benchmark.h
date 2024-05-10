@@ -7,7 +7,7 @@
 
 struct BM_nBody_step_args {
   static constexpr int64_t min_num_Bodies = 1;
-  static constexpr int64_t max_num_Bodies = 4096;
+  static constexpr int64_t max_num_Bodies = 8192;
   static constexpr int range_multiplier = 2;
   static constexpr uint64_t buff_alignment = 4096;
 };

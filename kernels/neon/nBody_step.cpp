@@ -9,17 +9,13 @@ void neon_kernels::nBody_step(double *px, double *py, double *pz, double *vx, do
   const bool odd_len = len % 2 != 0;
   const std::size_t simd_len = (odd_len ? len - 1 : len);
   const std::size_t last = len - 1;
-  // TODO try to improve the constant situation if necessary
   const float64x2_t vEpsilon = vdupq_n_f64(EPSILON_D);
   const float64x2_t vG = vdupq_n_f64(physics::G);
 
-  // TODO use pointers directly instead of indices if not optimized
   for (std::size_t i = 0; i < len; i++) {
     float64x2_t ax = vdupq_n_f64(0), ay = vdupq_n_f64(0), az = vdupq_n_f64(0);
+    const float64x2_t px_i = vdupq_n_f64(px[i]), py_i = vdupq_n_f64(py[i]), pz_i = vdupq_n_f64(pz[i]);
 
-    const float64x2_t px_i = vdupq_n_f64(px[i]);
-    const float64x2_t py_i = vdupq_n_f64(py[i]);
-    const float64x2_t pz_i = vdupq_n_f64(pz[i]);
     for (std::size_t j = 0; j < simd_len; j += num_lanes) {
       const float64x2_t px_j = vld1q_f64(px + j);
       const float64x2_t py_j = vld1q_f64(py + j);
