@@ -1,5 +1,4 @@
 #include "test_common.h"
-
 #include "common/random_data_generator.h"
 
 #include <memory>
