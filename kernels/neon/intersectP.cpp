@@ -1,17 +1,18 @@
 #include "neon_common.h"
 
 void neon_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const float *rayTMax, const Vec3f *invRayDir,
-                              const int *dirIsNeg, bool *result) {
+                              const int *dirIsNeg, int *result) {
   constexpr int x = 0;
   constexpr int y = 1;
   constexpr int z = 2;
   // TODO use faster instruction (should already be fast dup (element) is used)
-  const uint32x4_t vZeros = vdupq_n_u32(0);
-  const float32x4_t vWidenFac = vdupq_n_f32(1 + 2 * EPSILON_F);
+  const int32x4_t vZeros = vdupq_n_u32(0);
+  const float32_t widenFac = 1 + 2 * EPSILON_F;
 
   auto computeMask = [&](int axis) { return vcgtq_u32(vdupq_n_u32(dirIsNeg[axis]), vZeros); };
 
   auto computeT = [&](int axis, uint32x4_t mask) {
+    // TODO use fused multiply subtract
     // TODO work on improving the loading of data
     float32x4_t pMin_axis = {b[0][0][axis], b[1][0][axis], b[2][0][axis], b[3][0][axis]};
     float32x4_t pMax_axis = {b[0][1][axis], b[1][1][axis], b[2][1][axis], b[3][1][axis]};
@@ -27,8 +28,8 @@ void neon_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const flo
   };
 
   auto updateResult = [&](uint32x4_t result, float32x4_t tMin, float32x4_t tMax, float32x4_t tnMin, float32x4_t tnMax) {
-    uint32x4_t cond1 = vcleq_f32(tMin, tnMax);
-    uint32x4_t cond2 = vcleq_f32(tnMin, tMax);
+    int32x4_t cond1 = vcleq_f32(tMin, tnMax);
+    int32x4_t cond2 = vcleq_f32(tnMin, tMax);
     return vandq_u32(result, vandq_u32(cond1, cond2));
   };
 
@@ -43,7 +44,7 @@ void neon_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const flo
     return vbslq_f32(mask, tn, t);
   };
 
-  uint32x4_t vResult = vmvnq_u32(vZeros);
+  int32x4_t vResult = vmvnq_u32(vZeros);
   // float tMin = (bounds[dirIsNeg[0]][x] - rayOrig[x]) * invRayDir[x];
   // float tMax = (bounds[1 - dirIsNeg[0]][x] - rayOrig[x]) * invRayDir[x];
   float32x4_t tMin = computeT(x, computeMask(x));
@@ -56,8 +57,8 @@ void neon_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const flo
 
   // tMax *= 1 + 2 * EPSILON_F;
   // tyMax *= 1 + 2 * EPSILON_F;
-  tMax = vmulq_f32(tMax, vWidenFac);
-  tyMax = vmulq_f32(tyMax, vWidenFac);
+  tMax = vmulq_n_f32(tMax, widenFac);
+  tyMax = vmulq_n_f32(tyMax, widenFac);
 
   // if (tMin > tyMax || tyMin > tMax) {
   //   *result = false;
@@ -77,7 +78,7 @@ void neon_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const flo
   float32x4_t tzMax = computeT(z, vmvnq_u32(computeMask(z)));
 
   // tzMax *= 1 + 2 * EPSILON_F;
-  tzMax = vmulq_f32(tzMax, vWidenFac);
+  tzMax = vmulq_n_f32(tzMax, widenFac);
 
   // if (tMin > tzMax || tzMin > tMax) {
   //   *result = false;
@@ -93,12 +94,8 @@ void neon_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const flo
 
   //*result = (tMin < *rayTMax) && (tMax > 0);
   float32x4_t vTMax = vdupq_n_f32(*rayTMax);
-  uint32x4_t cond1 = vcltq_f32(tMin, vTMax);
-  uint32x4_t cond2 = vcgtq_f32(tMax, vZeros);
+  int32x4_t cond1 = vcltq_f32(tMin, vTMax);
+  int32x4_t cond2 = vcgtq_f32(tMax, vZeros);
   vResult = vandq_u32(vResult, vandq_u32(cond1, cond2));
-  // TODO improve this
-  result[0] = vResult[0];
-  result[1] = vResult[1];
-  result[2] = vResult[2];
-  result[3] = vResult[3];
+  vst1q_s32(result, vResult);
 }

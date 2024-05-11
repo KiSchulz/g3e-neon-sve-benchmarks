@@ -12,7 +12,7 @@ void nBody_step(double *px, double *py, double *pz, double *vx, double *vy, doub
                 std::size_t len);
 static constexpr std::size_t intersectPWidth = 1;
 void intersectP(const Bounds3f *b, const Vec3f *rayOrig, const float *rayTMax, const Vec3f *invRayDir,
-                const int *dirIsNeg, bool *result);
+                const int *dirIsNeg, int *result);
 } // namespace reference_kernels
 
 #endif // NEON_SVE_BENCH_REFERENCE_KERNELS_H

@@ -1,10 +1,11 @@
 #include "common/random_data_generator.h"
 #include "test_common.h"
 
-using Func = void (*)(const Bounds3f *, const Vec3f *, const float *, const Vec3f *, const int *, bool *);
+using Func = void (*)(const Bounds3f *, const Vec3f *, const float *, const Vec3f *, const int *, int *);
 
 class IntersectPTest : public testing::TestWithParam<Func>, public RandomDataGenerator {
 public:
+  // TODO rework this to be portable as sve vector with is not constexpr
   constexpr static std::size_t maxWidth =
       std::max(ref::intersectPWidth, std::max(neon::intersectPWidth, sve::intersectPWidth));
 
@@ -21,7 +22,7 @@ public:
         dirIsNeg[i] = dir[i] < 0.0 ? 1 : 0;
       }
       Vec3f invDir = dir.normalize().invertElements();
-      bool results[maxWidth];
+      int results[maxWidth];
       f(box, &o, &tMax, &invDir, dirIsNeg, results);
       return results[0];
     }
@@ -124,6 +125,7 @@ TEST_P(IntersectPTest, emptyAABB) { emptyAABB(GetParam()); }
 TEST_P(IntersectPTest, tMax) { tMax(GetParam()); }
 TEST_P(IntersectPTest, hitsAllRandomAABB) { hitsAllRandomAABB(GetParam()); }
 TEST_P(IntersectPTest, compareAgainstRef) { compareAgainstRef(GetParam()); }
+// TODO add a vector test which tests if all the results from the vector implementations are correct not only the first
 
 INSTANTIATE_TEST_SUITE_P(Kernels, IntersectPTest,
                          testing::Values(&ref::intersectP, &neon::intersectP, &sve::intersectP),

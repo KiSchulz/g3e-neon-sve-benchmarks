@@ -1,7 +1,7 @@
 #include "reference_common.h"
 
 void reference_kernels::intersectP(const Bounds3f *b, const Vec3f *rO, const float *rayTMax, const Vec3f *iD,
-                                   const int *dirIsNeg, bool *result) {
+                                   const int *dirIsNeg, int *result) {
   constexpr int x = 0;
   constexpr int y = 1;
   constexpr int z = 2;
