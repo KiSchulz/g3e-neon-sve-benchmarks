@@ -5,8 +5,12 @@ using Func = void (*)(const Bounds3f *, const Vec3f *, const float *, const Vec3
 
 class IntersectPTest : public testing::TestWithParam<Func>, public RandomDataGenerator {
 public:
+  constexpr static std::size_t maxWidth =
+      std::max(ref::intersectPWidth, std::max(neon::intersectPWidth, sve::intersectPWidth));
+
+  // Input class for all versions of intersectP
   struct Input {
-    Bounds3f box;
+    Bounds3f box[maxWidth];
     Vec3f o;
     Vec3f dir;
     float tMax = INFINITY_F;
@@ -17,17 +21,18 @@ public:
         dirIsNeg[i] = dir[i] < 0.0 ? 1 : 0;
       }
       Vec3f invDir = dir.normalize().invertElements();
-      bool result;
-      f(&box, &o, &tMax, &invDir, dirIsNeg, &result);
-      return result;
+      bool results[maxWidth];
+      f(box, &o, &tMax, &invDir, dirIsNeg, results);
+      return results[0];
     }
 
     void test(Func f, bool expected) { ASSERT_EQ(expected, getResult(f)); }
   };
 
+  // TODO refactor the tests to be compatible with simd versions
   static void positiveDir(Func f) {
     Input i;
-    i.box = Bounds3f{Vec3f{-1, -1, -1}, Vec3f{1, 1, 1}};
+    i.box[0] = Bounds3f{Vec3f{-1, -1, -1}, Vec3f{1, 1, 1}};
     i.o = Vec3f{-2, 0, 0};
 
     std::vector<Vec3f> trueDirs = {{1, 0, 0}, {1, 0.5, 0}, {1, 0.5, 0.5}};
@@ -45,7 +50,7 @@ public:
 
   static void negativeDir(Func f) {
     Input i;
-    i.box = Bounds3f{Vec3f{-1, -1, -1}, Vec3f{1, 1, 1}};
+    i.box[0] = Bounds3f{Vec3f{-1, -1, -1}, Vec3f{1, 1, 1}};
     i.o = Vec3f{-2, 0, 0};
 
     std::vector<Vec3f> trueDirs = {{1, 0, 0}, {1, -0.5, 0}, {1, -0.5, -0.5}};
@@ -64,7 +69,7 @@ public:
 
   static void emptyAABB(Func f) {
     Input i;
-    i.box = Bounds3f{Vec3f{1, 1, 1}, Vec3f{-1, -1, -1}};
+    i.box[0] = Bounds3f{Vec3f{1, 1, 1}, Vec3f{-1, -1, -1}};
     i.o = Vec3f{-1, 0, 0};
     i.dir = Vec3f{1, 0, 0};
 
@@ -73,7 +78,7 @@ public:
 
   static void tMax(Func f) {
     Input i;
-    i.box = Bounds3f{Vec3f{-1, -1, -1}, Vec3f{1, 1, 1}};
+    i.box[0] = Bounds3f{Vec3f{-1, -1, -1}, Vec3f{1, 1, 1}};
     i.o = Vec3f{-2, 0, 0};
     i.dir = Vec3f{1, 0, 0};
 
@@ -92,9 +97,9 @@ public:
   void hitsAllRandomAABB(Func f) {
     for (std::size_t i = 0; i < 1024; i++) {
       Input input;
-      input.box = randomAABB(Bounds3f{Vec3f{-1, -1, -1}, Vec3f{1, 1, 1}});
+      input.box[0] = randomAABB(Bounds3f{Vec3f{-1, -1, -1}, Vec3f{1, 1, 1}});
       input.o = randomVec3f(Bounds3f{Vec3f{-1e9, -1e9, -1e9}, Vec3f{1e9, 1e9, 1e9}});
-      input.dir = randomVec3f(input.box) - input.o;
+      input.dir = randomVec3f(input.box[0]) - input.o;
 
       input.test(f, true);
     }
@@ -104,7 +109,7 @@ public:
     const Bounds3f baseBox = {Vec3f{-1, -1, -1}, Vec3f{1, 1, 1}};
     for (std::size_t i = 0; i < 1024; i++) {
       Input input;
-      input.box = randomAABB(baseBox);
+      input.box[0] = randomAABB(baseBox);
       input.o = randomVec3f(baseBox);
       input.dir = randomVec3f(baseBox);
 
@@ -117,7 +122,7 @@ TEST_P(IntersectPTest, positiveDir) { positiveDir(GetParam()); }
 TEST_P(IntersectPTest, negativeDir) { negativeDir(GetParam()); }
 TEST_P(IntersectPTest, emptyAABB) { emptyAABB(GetParam()); }
 TEST_P(IntersectPTest, tMax) { tMax(GetParam()); }
-TEST_P(IntersectPTest, hitsAllRandomAAB) { hitsAllRandomAABB(GetParam()); }
+TEST_P(IntersectPTest, hitsAllRandomAABB) { hitsAllRandomAABB(GetParam()); }
 TEST_P(IntersectPTest, compareAgainstRef) { compareAgainstRef(GetParam()); }
 
 INSTANTIATE_TEST_SUITE_P(Kernels, IntersectPTest,
