@@ -12,7 +12,7 @@ void sve_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const floa
   svbool_t vResult = svptrue_b32();
   auto computeT = [&](int axis, int bIdx) {
     // TODO use fused multiply subtract
-    svfloat32_t res = svld1_gather_u32offset_f32(vResult, (*b)[bIdx].v, vOffsets);
+    svfloat32_t res = svld1_gather_u32offset_f32(vResult, &(*b)[bIdx][axis], vOffsets);
     svfloat32_t o = svdup_f32((*rayOrig)[axis]);
     res = svsub_f32_x(vResult, res, o);
 

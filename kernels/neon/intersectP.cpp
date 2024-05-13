@@ -17,14 +17,14 @@ void neon_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const flo
     float32x4_t pMin_axis = {b[0][0][axis], b[1][0][axis], b[2][0][axis], b[3][0][axis]};
     float32x4_t pMax_axis = {b[0][1][axis], b[1][1][axis], b[2][1][axis], b[3][1][axis]};
     // TODO change this instruction as every lane will be the same
-    float32x4_t result = vbslq_f32(mask, pMax_axis, pMin_axis);
+    float32x4_t res = vbslq_f32(mask, pMax_axis, pMin_axis);
 
     float32x4_t o = vdupq_n_f32((*rayOrig)[axis]);
-    result = vsubq_f32(result, o);
+    res = vsubq_f32(res, o);
     float32x4_t id = vdupq_n_f32((*invRayDir)[axis]);
-    result = vmulq_f32(result, id);
+    res = vmulq_f32(res, id);
 
-    return result;
+    return res;
   };
 
   auto updateResult = [&](uint32x4_t result, float32x4_t tMin, float32x4_t tMax, float32x4_t tnMin, float32x4_t tnMax) {
