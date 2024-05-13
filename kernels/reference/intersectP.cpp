@@ -1,5 +1,7 @@
 #include "reference_common.h"
 
+std::size_t reference_kernels::intersectPWidth() { return 1; }
+
 void reference_kernels::intersectP(const Bounds3f *b, const Vec3f *rO, const float *rayTMax, const Vec3f *iD,
                                    const int *dirIsNeg, int *result) {
   constexpr int x = 0;

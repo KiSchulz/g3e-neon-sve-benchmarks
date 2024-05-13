@@ -1,18 +1,22 @@
 #include "sve_common.h"
 
+std::size_t sve_kernels::intersectPWidth() { return svcntw(); }
+
 void sve_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const float *rayTMax, const Vec3f *invRayDir,
                              const int *dirIsNeg, int *result) {
   constexpr int x = 0;
   constexpr int y = 1;
   constexpr int z = 2;
-  // TODO try to avoid having vOffsets and the complex load in computeT or use base parameter of svindex more efficiently
-  const svuint32_t vOffsets = svindex_u32(0, sizeof(Bounds3f));
+  // TODO try to avoid having vIndices and the complex load in computeT or use base parameter of svindex more
+  // efficiently
+  const svuint32_t vIndices = svindex_u32(0, sizeof(Bounds3f) / sizeof (float32_t));
   const float32_t widenFac = 1 + 2 * EPSILON_F;
 
   svbool_t vResult = svptrue_b32();
   auto computeT = [&](int axis, int bIdx) {
     // TODO use fused multiply subtract
-    svfloat32_t res = svld1_gather_u32offset_f32(vResult, &(*b)[bIdx][axis], vOffsets);
+    auto *base = (float32_t *)((uint8_t *)b + sizeof(Vec3f) * bIdx + sizeof(float32_t) * axis);
+    svfloat32_t res = svld1_gather_u32index_f32(vResult, base, vIndices);
     svfloat32_t o = svdup_f32((*rayOrig)[axis]);
     res = svsub_f32_x(vResult, res, o);
 

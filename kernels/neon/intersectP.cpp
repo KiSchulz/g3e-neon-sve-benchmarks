@@ -1,5 +1,7 @@
 #include "neon_common.h"
 
+std::size_t neon_kernels::intersectPWidth() { return 4; }
+
 void neon_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const float *rayTMax, const Vec3f *invRayDir,
                               const int *dirIsNeg, int *result) {
   constexpr int x = 0;
