@@ -8,10 +8,10 @@ void neon_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const flo
   constexpr int y = 1;
   constexpr int z = 2;
   // TODO use faster instruction (should already be fast dup (element) is used)
-  const int32x4_t vZeros = vdupq_n_u32(0);
+  const int32x4_t vZeros = vdupq_n_s32(0);
   const float32_t widenFac = 1 + 2 * EPSILON_F;
 
-  auto computeMask = [&](int axis) { return vcgtq_u32(vdupq_n_u32(dirIsNeg[axis]), vZeros); };
+  auto computeMask = [&](int axis) { return vcgtq_s32(vdupq_n_s32(dirIsNeg[axis]), vZeros); };
 
   auto computeT = [&](int axis, uint32x4_t mask) {
     // TODO work on improving the loading of data
