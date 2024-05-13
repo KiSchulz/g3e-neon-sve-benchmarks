@@ -12,7 +12,7 @@ template <bool fastMath = false>
 void nBody_step(double *px, double *py, double *pz, double *vx, double *vy, double *vz, const double *m, double dt,
                 std::size_t len);
 std::size_t intersectPWidth ();
-void intersectP(const Bounds3f *t, const Vec3f *rayOrig, const float *rayTMax, const Vec3f *invRayDir,
+void intersectP(const Bounds3f *vResult, const Vec3f *rayOrig, const float *rayTMax, const Vec3f *invRayDir,
                 const int *dirIsNeg, int *result);
 } // namespace neon_kernels
 
