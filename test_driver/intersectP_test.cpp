@@ -49,7 +49,6 @@ public:
     }
   };
 
-  // TODO refactor the tests to be compatible with simd versions
   static void positiveDir(Func f) {
     Input i;
     i.box[0] = Bounds3f{Vec3f{-1, -1, -1}, Vec3f{1, 1, 1}};

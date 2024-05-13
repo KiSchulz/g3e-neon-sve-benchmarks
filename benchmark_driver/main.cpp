@@ -6,6 +6,7 @@
 #include "hello_benchmark.h"
 #include "memcmp_benchmark.h"
 #include "nBody_step_benchmark.h"
+#include "intersectP_benchmark.h"
 
 int main(int argc, char **argv) {
   const auto start = std::chrono::high_resolution_clock::now();
@@ -13,8 +14,9 @@ int main(int argc, char **argv) {
   if (argc == 1 || (argc >= 2 && std::strcmp(argv[1], "-def") == 0)) {
     std::vector<std::string> customArgv = {
         argv[0], "--benchmark_counters_tabular=true",
+        //"--benchmark_perf_counters=CYCLES,INSTRUCTIONS,BRANCH-MISSES",
         "--benchmark_perf_counters=CYCLES,INSTRUCTIONS,STALLED-CYCLES-BACKEND",
-        //"--benchmark_perf_counters=CYCLES,INSTRUCTIONS,STALLED-CYCLES-FRONTEND", // CACHE-MISSES,BRANCH-MISSES dont work
+        //"--benchmark_perf_counters=CYCLES,INSTRUCTIONS,STALLED-CYCLES-FRONTEND",
         "--benchmark_display_aggregates_only=true" /*, "--benchmark_repetitions=10"*/};
 
     // to avoid some undefined behaviour when using string literals in vector initialization

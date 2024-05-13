@@ -7,29 +7,26 @@ void sve_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const floa
   constexpr int x = 0;
   constexpr int y = 1;
   constexpr int z = 2;
-  // TODO try to avoid having vIndices and the complex load in computeT or use base parameter of svindex more
-  // efficiently
-  const svuint32_t vIndices = svindex_u32(0, sizeof(Bounds3f) / sizeof (float32_t));
-  const float32_t widenFac = 1 + 2 * EPSILON_F;
+  const svuint32_t vIndices = svindex_u32(0, sizeof(Bounds3f) / sizeof(float32_t));
+  constexpr float32_t widenFac = 1 + 2 * EPSILON_F;
 
   svbool_t vResult = svptrue_b32();
   auto computeT = [&](int axis, int bIdx) {
-    // TODO use fused multiply subtract
     auto *base = (float32_t *)((uint8_t *)b + sizeof(Vec3f) * bIdx + sizeof(float32_t) * axis);
-    svfloat32_t res = svld1_gather_u32index_f32(vResult, base, vIndices);
-    svfloat32_t o = svdup_f32((*rayOrig)[axis]);
-    res = svsub_f32_x(vResult, res, o);
 
-    svfloat32_t id = svdup_f32((*invRayDir)[axis]);
+    svfloat32_t res = svld1_gather_u32index_f32(vResult, base, vIndices);
+    const svfloat32_t o = svdup_f32((*rayOrig)[axis]);
+    const svfloat32_t id = svdup_f32((*invRayDir)[axis]);
+
+    res = svsub_f32_x(vResult, res, o);
     res = svmul_f32_x(vResult, res, id);
 
     return res;
   };
 
   auto updateResult = [&](svfloat32_t tMin, svfloat32_t tMax, svfloat32_t tnMin, svfloat32_t tnMax) {
-    svbool_t cond1 = svcmple_f32(vResult, tMin, tnMax);
-    svbool_t cond2 = svcmple_f32(vResult, tnMin, tMax);
-    // TODO test if vResult as governing predicate would cost time as manual suggests
+    const svbool_t cond1 = svcmple_f32(vResult, tMin, tnMax);
+    const svbool_t cond2 = svcmple_f32(vResult, tnMin, tMax);
     return svand_b_z(cond1, cond2, vResult);
   };
 
@@ -91,12 +88,14 @@ void sve_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const floa
   tMax = updateT.operator()<UpdateType::max>(tMax, tzMax);
 
   //*result = (tMin < *rayTMax) && (tMax > 0);
-  svfloat32_t vTMax = svdup_f32_x(vResult, *rayTMax);
-  svbool_t cond1 = svcmplt_f32(vResult, tMin, vTMax);
-  svbool_t cond2 = svcmpgt_n_f32(vResult, tMax, 0);
+  const svfloat32_t vTMax = svdup_f32_x(vResult, *rayTMax);
+  const svbool_t cond1 = svcmplt_f32(vResult, tMin, vTMax);
+  const svbool_t cond2 = svcmpgt_n_f32(vResult, tMax, 0);
   vResult = svand_b_z(cond1, cond2, vResult);
 
-  svint32_t res = svdup_n_s32(-1);
-  res = svand_z(vResult, res, res);
+  // using some instruction to filter set inactive elements to zero
+  svint32_t res = svdup_n_s32(0);
+  res = svnot_s32_z(vResult, res);
+
   svst1_s32(svptrue_b32(), result, res);
 }

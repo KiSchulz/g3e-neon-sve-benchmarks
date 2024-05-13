@@ -68,6 +68,16 @@ struct RandomDataGenerator {
     }
     return b;
   }
+
+  void initAABBArr(const Bounds3f &bounds, Bounds3f *arr, std::size_t length) {
+    std::generate(arr, arr + length, [&]() { return randomAABB(bounds); });
+  }
+
+  void initRayArr(const Bounds3f &bounds, Vec3f *orig, Vec3f *dir, std::size_t length) {
+    std::generate(orig, orig + length, [&]() { return randomVec3f(bounds); });
+    std::generate(dir, dir + length,
+                  [&]() { return randomVec3f(Bounds3f{Vec3f{-1, -1, -1}, Vec3f{1, 1, 1}}).normalize(); });
+  }
 };
 
 #endif // NEON_SVE_BENCH_RANDOM_DATA_GENERATOR_H
