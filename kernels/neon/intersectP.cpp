@@ -31,7 +31,7 @@ void neon_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const flo
   auto updateResult = [&](uint32x4_t result, float32x4_t tMin, float32x4_t tMax, float32x4_t tnMin, float32x4_t tnMax) {
     int32x4_t cond1 = vcleq_f32(tMin, tnMax);
     int32x4_t cond2 = vcleq_f32(tnMin, tMax);
-    return vandq_u32(result, vandq_u32(cond1, cond2));
+    return vandq_s32(result, vandq_s32(cond1, cond2));
   };
 
   enum class UpdateType { min, max };
@@ -45,16 +45,16 @@ void neon_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const flo
     return vbslq_f32(mask, tn, t);
   };
 
-  int32x4_t vResult = vmvnq_u32(vZeros);
+  int32x4_t vResult = vmvnq_s32(vZeros);
   // float tMin = (bounds[dirIsNeg[0]][x] - rayOrig[x]) * invRayDir[x];
   // float tMax = (bounds[1 - dirIsNeg[0]][x] - rayOrig[x]) * invRayDir[x];
   float32x4_t tMin = computeT(x, computeMask(x));
-  float32x4_t tMax = computeT(x, vmvnq_u32(computeMask(x)));
+  float32x4_t tMax = computeT(x, vmvnq_s32(computeMask(x)));
 
   // float tyMin = (bounds[dirIsNeg[1]][y] - rayOrig[y]) * invRayDir[y];
   // float tyMax = (bounds[1 - dirIsNeg[1]][y] - rayOrig[y]) * invRayDir[y];
   float32x4_t tyMin = computeT(y, computeMask(y));
-  float32x4_t tyMax = computeT(y, vmvnq_u32(computeMask(y)));
+  float32x4_t tyMax = computeT(y, vmvnq_s32(computeMask(y)));
 
   // tMax *= 1 + 2 * EPSILON_F;
   // tyMax *= 1 + 2 * EPSILON_F;
@@ -76,7 +76,7 @@ void neon_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const flo
   // float tzMin = (bounds[dirIsNeg[2]][z] - rayOrig[z]) * invRayDir[z];
   // float tzMax = (bounds[1 - dirIsNeg[2]][z] - rayOrig[z]) * invRayDir[z];
   float32x4_t tzMin = computeT(z, computeMask(z));
-  float32x4_t tzMax = computeT(z, vmvnq_u32(computeMask(z)));
+  float32x4_t tzMax = computeT(z, vmvnq_s32(computeMask(z)));
 
   // tzMax *= 1 + 2 * EPSILON_F;
   tzMax = vmulq_n_f32(tzMax, widenFac);
@@ -97,6 +97,6 @@ void neon_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const flo
   float32x4_t vTMax = vdupq_n_f32(*rayTMax);
   int32x4_t cond1 = vcltq_f32(tMin, vTMax);
   int32x4_t cond2 = vcgtq_f32(tMax, vZeros);
-  vResult = vandq_u32(vResult, vandq_u32(cond1, cond2));
+  vResult = vandq_s32(vResult, vandq_s32(cond1, cond2));
   vst1q_s32(result, vResult);
 }
