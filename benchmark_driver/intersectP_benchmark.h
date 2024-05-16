@@ -44,6 +44,8 @@ template <class... Args> void BM_intersectP(benchmark::State &state, Args &&...a
           dirIsNeg[k] = invDir[k] < 0 ? 1 : 0;
         }
         func(boxes + boxOffset, &orig[i], &tMax, &invDir, dirIsNeg, results);
+
+        benchmark::DoNotOptimize(results);
         benchmark::ClobberMemory();
       }
     }
