@@ -1,5 +1,5 @@
-#include "test_common.h"
 #include "common/random_data_generator.h"
+#include "test_common.h"
 
 #include <cstring>
 
@@ -18,17 +18,10 @@ public:
   static bool relEQ(double a, double b, double relDiv) { return std::abs(a - b) / std::min(a, b) <= relDiv; }
 
   NBodyTest() {
-    if (fastMath) {
-      doubleEQ_n = 1;
-      num_iterations = 256;
-      relEQ_relDiv = 1e-2;
-      maxDeviation = 5e-3;
-    } else {
-      doubleEQ_n = 1;
-      num_iterations = 1024;
-      relEQ_relDiv = 2e-5;
-      maxDeviation = 1e-12;
-    }
+    doubleEQ_n = 1;
+    num_iterations = 1024;
+    relEQ_relDiv = 2e-5;
+    maxDeviation = 1e-12;
   }
 
   static void singleNonMovingObject(Func f) {

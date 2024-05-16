@@ -11,7 +11,6 @@ void neon_kernels::intersectP(const Bounds3f *b, const Vec3f *rayOrig, const flo
   const float32_t widenFac = 1 + 2 * EPSILON_F;
 
   auto computeT = [&](int axis, int bIdx) {
-    // TODO work on improving the loading of data
     float32x4_t pMin_axis = {b[0][0][axis], b[1][0][axis], b[2][0][axis], b[3][0][axis]};
     float32x4_t pMax_axis = {b[0][1][axis], b[1][1][axis], b[2][1][axis], b[3][1][axis]};
     float32x4_t res = bIdx ? pMax_axis : pMin_axis;

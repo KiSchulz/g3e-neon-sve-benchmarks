@@ -32,10 +32,16 @@ void sve_kernels::nBody_step(double *px, double *py, double *pz, double *vx, dou
 
       svfloat64_t ar;
       if constexpr (fastMath) {
-        const svfloat64_t r = svrsqrte_f64(r2);
-        r2 = svrecpe_f64(r2);
-        acc = svmul_f64_x(pred, acc, r2);
-        ar = svmul_f64_z(pred, acc, r);
+        // TODO reduce the number of iterations by only computing one of the inverses
+        svfloat64_t ir = svrsqrte_f64(r2);
+        ir = svmul_f64_x(pred, svrsqrts_f64(r2, svmul_f64_x(pred, ir, ir)), ir);
+        ir = svmul_f64_x(pred, svrsqrts_f64(r2, svmul_f64_x(pred, ir, ir)), ir);
+        ir = svmul_f64_x(pred, svrsqrts_f64(r2, svmul_f64_x(pred, ir, ir)), ir);
+
+        svfloat64_t ir2 = svmul_f64_x(pred, ir, ir);
+
+        acc = svmul_f64_x(pred, acc, ir2);
+        ar = svmul_f64_z(pred, acc, ir);
       } else {
         const svfloat64_t r = svsqrt_f64_x(pred, r2);
         acc = svdiv_f64_x(pred, acc, r2);

@@ -34,10 +34,16 @@ void neon_kernels::nBody_step(double *px, double *py, double *pz, double *vx, do
 
       float64x2_t ar;
       if constexpr (fastMath) {
-        float64x2_t r = vrsqrteq_f64(r2);
-        r2 = vrecpeq_f64(r2);
-        acc = vmulq_f64(acc, r2);
-        ar = vmulq_f64(acc, r);
+        // TODO reduce the number of iterations by only computing one of the inverses try to perform only about < 7
+        float64x2_t ir = vrsqrteq_f64(r2);
+        ir = vmulq_f64(vrsqrtsq_f64(r2, vmulq_f64(ir, ir)), ir);
+        ir = vmulq_f64(vrsqrtsq_f64(r2, vmulq_f64(ir, ir)), ir);
+        ir = vmulq_f64(vrsqrtsq_f64(r2, vmulq_f64(ir, ir)), ir);
+
+        float64x2_t ir2 = vmulq_f64(ir, ir);
+
+        acc = vmulq_f64(acc, ir2);
+        ar = vmulq_f64(acc, ir);
       } else {
         const float64x2_t r = vsqrtq_f64(r2);
         acc = vdivq_f64(acc, r2);
