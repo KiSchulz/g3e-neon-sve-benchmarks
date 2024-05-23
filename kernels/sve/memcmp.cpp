@@ -11,8 +11,9 @@ int sve_kernels::memcmp(const void *in_lhs, const void *in_rhs, std::size_t coun
   while (lhs < lhs_end) {
     // initializing pred with a fitting length
     // load data
-    const svuint8_t l = svldff1_u8(pred, lhs);
-    const svuint8_t r = svldff1_u8(pred, rhs);
+    // TODO remove first fault stuff
+    const svuint8_t l = svld1_u8(pred, lhs);
+    const svuint8_t r = svld1_u8(pred, rhs);
     // perform not equal comparison
     const svbool_t cmp_res = svcmpne(pred, l, r);
 
