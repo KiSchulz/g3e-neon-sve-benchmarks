@@ -32,7 +32,6 @@ void sve_kernels::nBody_step(double *px, double *py, double *pz, double *vx, dou
 
       svfloat64_t ar;
       if constexpr (fastMath) {
-        // TODO reduce the number of iterations by only computing one of the inverses
         svfloat64_t ir = svrsqrte_f64(r2);
         ir = svmul_f64_x(pred, svrsqrts_f64(r2, svmul_f64_x(pred, ir, ir)), ir);
         ir = svmul_f64_x(pred, svrsqrts_f64(r2, svmul_f64_x(pred, ir, ir)), ir);

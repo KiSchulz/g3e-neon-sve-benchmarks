@@ -5,6 +5,7 @@
 
 #include "hello_benchmark.h"
 #include "memcmp_benchmark.h"
+#include "accumulate_benchmark.h"
 #include "nBody_step_benchmark.h"
 #include "intersectP_benchmark.h"
 

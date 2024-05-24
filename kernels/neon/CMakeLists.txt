@@ -3,4 +3,5 @@ add_library(neon_kernels
         hello.cpp
         memcmp.cpp
         nBody_step.cpp
-        intersectP.cpp)
+        intersectP.cpp
+        accumulate.cpp)

@@ -8,6 +8,7 @@
 namespace sve_kernels {
 uint64_t helloSVE();
 int memcmp(const void *lhs, const void *rhs, std::size_t count);
+uint64_t accumulate(const uint64_t *arr, std::size_t len);
 template <bool fastMath = false>
 void nBody_step(double *px, double *py, double *pz, double *vx, double *vy, double *vz, const double *m, double dt,
                 std::size_t len);
