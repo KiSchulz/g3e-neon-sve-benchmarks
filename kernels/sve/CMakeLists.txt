@@ -4,4 +4,5 @@ add_library(sve_kernels
         memcmp.cpp
         nBody_step.cpp
         intersectP.cpp
-        accumulate.cpp)
+        accumulate.cpp
+        maxOps.cpp)

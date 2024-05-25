@@ -9,6 +9,8 @@
 #include "nBody_step_benchmark.h"
 #include "intersectP_benchmark.h"
 
+#include "maxOps_benchmark.h"
+
 int main(int argc, char **argv) {
   const auto start = std::chrono::high_resolution_clock::now();
 
