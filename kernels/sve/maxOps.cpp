@@ -94,28 +94,32 @@ template <> uint32_t sve_kernels::maxOps(std::size_t n_ops) {
 
   const svbool_t vTrue = svptrue_b32();
   svuint32_t acc0 = svdup_u32(1);
-  svuint32_t acc1 = svdup_u32(2);
-  svuint32_t acc2 = svdup_u32(3);
-  svuint32_t acc3 = svdup_u32(5);
-  svuint32_t acc4 = svdup_u32(7);
-  svuint32_t acc5 = svdup_u32(11);
-  svuint32_t acc6 = svdup_u32(13);
-  svuint32_t acc7 = svdup_u32(17);
+  svuint32_t acc1 = svdup_u32(3);
+  svuint32_t acc2 = svdup_u32(5);
+  svuint32_t acc3 = svdup_u32(7);
+  svuint32_t acc4 = svdup_u32(11);
+  svuint32_t acc5 = svdup_u32(13);
+  svuint32_t acc6 = svdup_u32(17);
+  svuint32_t acc7 = svdup_u32(19);
 
-  const svuint32_t fac0 = svdup_u32(2);
-  const svuint32_t fac1 = svdup_u32(3);
-  const svuint32_t fac2 = svdup_u32(5);
-  const svuint32_t fac3 = svdup_u32(7);
+  const svuint32_t fac0 = svdup_u32(23);
+  const svuint32_t fac1 = svdup_u32(29);
+  const svuint32_t fac2 = svdup_u32(31);
+  const svuint32_t fac3 = svdup_u32(37);
+  const svuint32_t fac4 = svdup_u32(41);
+  const svuint32_t fac5 = svdup_u32(43);
+  const svuint32_t fac6 = svdup_u32(47);
+  const svuint32_t fac7 = svdup_u32(53);
 
   for (std::size_t i = 0; i < n_ops; i += ops_per_iter) {
-    acc0 = svmad_u32_x(vTrue, acc0, fac0, fac1);
-    acc1 = svmad_u32_x(vTrue, acc1, fac0, fac2);
-    acc2 = svmad_u32_x(vTrue, acc2, fac0, fac3);
-    acc3 = svmad_u32_x(vTrue, acc3, fac1, fac0);
-    acc4 = svmad_u32_x(vTrue, acc4, fac1, fac2);
-    acc5 = svmad_u32_x(vTrue, acc5, fac1, fac3);
-    acc6 = svmad_u32_x(vTrue, acc6, fac2, fac0);
-    acc7 = svmad_u32_x(vTrue, acc7, fac2, fac1);
+    acc0 = svmad_u32_x(vTrue, acc0, fac0, fac7);
+    acc1 = svmad_u32_x(vTrue, acc1, fac1, fac6);
+    acc2 = svmad_u32_x(vTrue, acc2, fac2, fac5);
+    acc3 = svmad_u32_x(vTrue, acc3, fac3, fac4);
+    acc4 = svmad_u32_x(vTrue, acc4, fac4, fac3);
+    acc5 = svmad_u32_x(vTrue, acc5, fac5, fac2);
+    acc6 = svmad_u32_x(vTrue, acc6, fac6, fac1);
+    acc7 = svmad_u32_x(vTrue, acc7, fac7, fac0);
   }
 
   acc0 = svadd_u32_x(vTrue, acc0, acc1);
@@ -131,34 +135,38 @@ template <> uint32_t sve_kernels::maxOps(std::size_t n_ops) {
 
 template <> uint64_t sve_kernels::maxOps(std::size_t n_ops) {
   constexpr std::size_t num_instruction_per_iteration = 8;
-  constexpr std::size_t ops_per_instruction_per_lane = 2;
+  constexpr std::size_t ops_per_instruction_per_lane = 1;
   const std::size_t num_lanes = svcntd();
   const std::size_t ops_per_iter = num_instruction_per_iteration * ops_per_instruction_per_lane * num_lanes;
 
   const svbool_t vTrue = svptrue_b32();
-  svuint64_t acc0 = svdup_u64(1);
-  svuint64_t acc1 = svdup_u64(2);
-  svuint64_t acc2 = svdup_u64(3);
-  svuint64_t acc3 = svdup_u64(5);
-  svuint64_t acc4 = svdup_u64(7);
-  svuint64_t acc5 = svdup_u64(11);
-  svuint64_t acc6 = svdup_u64(13);
-  svuint64_t acc7 = svdup_u64(17);
+  svuint64_t acc0 = svdup_u64(0);
+  svuint64_t acc1 = svdup_u64(0);
+  svuint64_t acc2 = svdup_u64(0);
+  svuint64_t acc3 = svdup_u64(0);
+  svuint64_t acc4 = svdup_u64(0);
+  svuint64_t acc5 = svdup_u64(0);
+  svuint64_t acc6 = svdup_u64(0);
+  svuint64_t acc7 = svdup_u64(0);
 
-  const svuint64_t fac0 = svdup_u64(2);
-  const svuint64_t fac1 = svdup_u64(3);
-  const svuint64_t fac2 = svdup_u64(5);
-  const svuint64_t fac3 = svdup_u64(7);
+  const svuint64_t fac0 = svdup_u64(1);
+  const svuint64_t fac1 = svdup_u64(2);
+  const svuint64_t fac2 = svdup_u64(3);
+  const svuint64_t fac3 = svdup_u64(5);
+  const svuint64_t fac4 = svdup_u64(7);
+  const svuint64_t fac5 = svdup_u64(11);
+  const svuint64_t fac6 = svdup_u64(13);
+  const svuint64_t fac7 = svdup_u64(17);
 
   for (std::size_t i = 0; i < n_ops; i += ops_per_iter) {
-    acc0 = svmad_u64_x(vTrue, acc0, fac0, fac1);
-    acc1 = svmad_u64_x(vTrue, acc1, fac0, fac2);
-    acc2 = svmad_u64_x(vTrue, acc2, fac0, fac3);
-    acc3 = svmad_u64_x(vTrue, acc3, fac1, fac0);
-    acc4 = svmad_u64_x(vTrue, acc4, fac1, fac2);
-    acc5 = svmad_u64_x(vTrue, acc5, fac1, fac3);
-    acc6 = svmad_u64_x(vTrue, acc6, fac2, fac0);
-    acc7 = svmad_u64_x(vTrue, acc7, fac2, fac1);
+    acc0 = svadd_u64_x(vTrue, acc0, fac0);
+    acc1 = svadd_u64_x(vTrue, acc1, fac1);
+    acc2 = svadd_u64_x(vTrue, acc2, fac2);
+    acc3 = svadd_u64_x(vTrue, acc3, fac3);
+    acc4 = svadd_u64_x(vTrue, acc4, fac4);
+    acc5 = svadd_u64_x(vTrue, acc5, fac5);
+    acc6 = svadd_u64_x(vTrue, acc6, fac6);
+    acc7 = svadd_u64_x(vTrue, acc7, fac7);
   }
 
   acc0 = svadd_u64_x(vTrue, acc0, acc1);

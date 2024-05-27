@@ -22,8 +22,8 @@ template <class... Args> void BM_maxOps(benchmark::State &state, Args &&...args)
 
 BENCHMARK_CAPTURE(BM_maxOps, Neon<float32_t>, &neon::maxOps<float>, BM_maxOps_args::num_ops);
 BENCHMARK_CAPTURE(BM_maxOps, Neon<float64_t>, &neon::maxOps<double>, BM_maxOps_args::num_ops);
-BENCHMARK_CAPTURE(BM_maxOps, Neon<uin32_t>, &neon::maxOps<uint32_t>, BM_maxOps_args::num_ops);
-BENCHMARK_CAPTURE(BM_maxOps, Neon<uin64_t>, &neon::maxOps<uint64_t>, BM_maxOps_args::num_ops);
+BENCHMARK_CAPTURE(BM_maxOps, Neon<uint32_t>, &neon::maxOps<uint32_t>, BM_maxOps_args::num_ops);
+BENCHMARK_CAPTURE(BM_maxOps, Neon<uint64_t>, &neon::maxOps<uint64_t>, BM_maxOps_args::num_ops);
 
 BENCHMARK_CAPTURE(BM_maxOps, SVE<float32_t>, &sve::maxOps<float>, BM_maxOps_args::num_ops);
 BENCHMARK_CAPTURE(BM_maxOps, SVE<float64_t>, &sve::maxOps<double>, BM_maxOps_args::num_ops);
