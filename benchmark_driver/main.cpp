@@ -6,6 +6,7 @@
 #include "hello_benchmark.h"
 
 #include "maxOps_benchmark.h"
+#include "vectorLoadFactor_benchmark.h"
 
 #include "memcmp_benchmark.h"
 #include "accumulate_benchmark.h"

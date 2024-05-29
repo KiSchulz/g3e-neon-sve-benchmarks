@@ -12,7 +12,7 @@ template <class... Args> void BM_maxOps(benchmark::State &state, Args &&...args)
   const auto func = std::get<0>(args_tuple);
   const auto num_ops = std::get<1>(args_tuple);
 
-  state.SetLabel(std::to_string(num_ops) + " = 2^" + std::to_string((int)std::log2(num_ops)));
+  state.SetLabel("ops = " + std::to_string(num_ops) + " = 2^" + std::to_string((int)std::log2(num_ops)));
 
   for (auto _ : state) {
     float result = func(num_ops);
