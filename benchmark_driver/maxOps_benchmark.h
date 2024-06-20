@@ -12,12 +12,13 @@ template <class... Args> void BM_maxOps(benchmark::State &state, Args &&...args)
   const auto func = std::get<0>(args_tuple);
   const auto num_ops = std::get<1>(args_tuple);
 
-  state.SetLabel("ops = " + std::to_string(num_ops) + " = 2^" + std::to_string((int)std::log2(num_ops)));
-
   for (auto _ : state) {
     float result = func(num_ops);
     benchmark::DoNotOptimize(result);
   }
+
+  state.counters["ops_per_cycle"] = (state.iterations() * num_ops) / state.counters["CYCLES"];
+  addClockCounter(state);
 }
 
 BENCHMARK_CAPTURE(BM_maxOps, Neon<float32_t>, &neon::maxOps<float>, BM_maxOps_args::num_ops);

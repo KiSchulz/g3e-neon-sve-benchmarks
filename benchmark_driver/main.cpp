@@ -22,7 +22,8 @@ int main(int argc, char **argv) {
         //"--benchmark_perf_counters=CYCLES,INSTRUCTIONS,BRANCH-MISSES",
         "--benchmark_perf_counters=CYCLES,INSTRUCTIONS,STALLED-CYCLES-BACKEND",
         //"--benchmark_perf_counters=CYCLES,INSTRUCTIONS,STALLED-CYCLES-FRONTEND",
-        "--benchmark_display_aggregates_only=true" /*, "--benchmark_repetitions=10"*/};
+        "--benchmark_display_aggregates_only=true, --benchmark_counters_tabular=true"
+        /*, "--benchmark_repetitions=10"*/};
 
     // to avoid some undefined behaviour when using string literals in vector initialization
     std::vector<char *> customArgv_cStr{};

@@ -6,16 +6,22 @@ int neon_kernels::memcmp(const void *in_lhs, const void *in_rhs, std::size_t cou
 
   const auto *lhs_end = (const uint64_t *)((const uint8_t *)in_lhs + count - (count % reg_width));
 
-  constexpr uint64_t ptr_inc = reg_width / sizeof(*lhs);
-  for (; lhs < lhs_end; lhs += ptr_inc, rhs += ptr_inc) {
+  constexpr uint64_t n = 2;
+  constexpr uint64_t numEl = (reg_width / sizeof(*lhs));
+  for (; lhs < lhs_end; lhs += numEl * n, rhs += numEl * n) {
     // load the data
-    const uint64x2_t l = vld1q_u64(lhs);
-    const uint64x2_t r = vld1q_u64(rhs);
+    const uint64x2_t l0 = vld1q_u64(lhs + 0 * numEl);
+    const uint64x2_t l1 = vld1q_u64(lhs + 1 * numEl);
+
+    const uint64x2_t r0 = vld1q_u64(rhs + 0 * numEl);
+    const uint64x2_t r1 = vld1q_u64(rhs + 1 * numEl);
     // perform xor
-    const uint64x2_t eor = veorq_u64(l, r);
+    uint64x2_t e0 = veorq_u64(l0, r0);
+    uint64x2_t e1 = veorq_u64(l1, r1);
+    e0 = veorq_u64(e0, e1);
 
     // find the max uint32_t value and check if it is not 0
-    if (vmaxvq_u32(vreinterpretq_u32_u64(eor))) {
+    if (vmaxvq_u32(vreinterpretq_u32_u64(e0))) [[unlikely]] {
       break;
     }
   }

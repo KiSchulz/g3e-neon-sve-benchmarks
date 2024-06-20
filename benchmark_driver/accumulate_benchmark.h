@@ -26,6 +26,9 @@ template <class... Args> void BM_aligned_accumulate(benchmark::State &state, Arg
     benchmark::DoNotOptimize(result);
   }
 
+  addByteCounters(state, size * sizeof(uint64_t));
+  addClockCounter(state);
+
   delete [] arr;
 }
 
