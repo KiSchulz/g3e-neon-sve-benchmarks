@@ -34,7 +34,7 @@ template <class... Args> void BM_aligned_memcmp(benchmark::State &state, Args &&
     benchmark::DoNotOptimize(result);
   }
 
-  addByteCounters(state, pref_len + 1);
+  addByteCounters(state, 2 * (pref_len + 1));
   addClockCounter(state);
 
   delete[] buff1;
