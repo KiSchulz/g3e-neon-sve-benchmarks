@@ -1,5 +1,5 @@
 #include "sve_common.h"
-#include <cstring>
+
 void *sve_kernels::memset(void *dest, int ch, std::size_t count) {
   constexpr uint64_t n = 4;
   const uint64_t vl = svcntb();

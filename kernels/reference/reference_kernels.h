@@ -14,6 +14,8 @@ uint64_t accumulate(const uint64_t *arr, std::size_t len);
 
 void *memset(void *dest, int ch, std::size_t count);
 
+void *memcpy(void *dest, const void* src, std::size_t count);
+
 void nBody_step(double *px, double *py, double *pz, double *vx, double *vy, double *vz, const double *m, double dt,
                 std::size_t len);
 

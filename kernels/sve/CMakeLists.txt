@@ -7,4 +7,5 @@ add_library(sve_kernels
         accumulate.cpp
         maxOps.cpp
         vectorLoadFactor.cpp
-        memset.cpp)
+        memset.cpp
+        memcpy.cpp)

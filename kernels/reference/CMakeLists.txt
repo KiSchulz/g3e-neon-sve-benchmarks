@@ -5,4 +5,5 @@ add_library(reference_kernels
         nBody_step.cpp
         intersectP.cpp
         accumulate.cpp
-        memset.cpp)
+        memset.cpp
+        memcpy.cpp)

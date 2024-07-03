@@ -14,6 +14,8 @@ uint64_t accumulate(const uint64_t *arr, std::size_t len);
 
 void *memset(void *dest, int ch, std::size_t count);
 
+void *memcpy(void *dest, const void* src, std::size_t count);
+
 template <class T> T maxOps(std::size_t n_ops);
 
 template <bool fastMath = false>

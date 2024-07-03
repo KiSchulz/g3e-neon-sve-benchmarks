@@ -8,15 +8,15 @@ public:
   static void nullptrTest(Func f) { ASSERT_EQ(ref::memset(nullptr, 0, 0), f(nullptr, 0, 0)); }
 
   void randomDataTest(Func f, std::size_t max_size) {
-    char *arr = new char[max_size + 1];
+    char *arr = new char[max_size];
     for (std::size_t i = 0; i < max_size; i++) {
       const int defaultValue = getRandomInt<int>();
       const int ch = getRandomInt<int>();
-      ref::memset(arr, defaultValue, max_size + 1);
+      ref::memset(arr, defaultValue, max_size);
 
       f(arr, ch, i);
       ASSERT_TRUE(std::all_of(arr, arr + i, [&](char el) { return el == ch; }));
-      ASSERT_TRUE(std::all_of(arr + i, arr + max_size + 1, [&](char el) { return el == defaultValue; }));
+      ASSERT_TRUE(std::all_of(arr + i, arr + max_size, [&](char el) { return el == defaultValue; }));
     }
     delete[] arr;
   }

@@ -6,4 +6,5 @@ add_library(neon_kernels
         intersectP.cpp
         accumulate.cpp
         maxOps.cpp
-        memset.cpp)
+        memset.cpp
+        memcpy.cpp)
