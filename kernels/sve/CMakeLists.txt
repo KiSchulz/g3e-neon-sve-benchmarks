@@ -6,4 +6,5 @@ add_library(sve_kernels
         intersectP.cpp
         accumulate.cpp
         maxOps.cpp
-        vectorLoadFactor.cpp)
+        vectorLoadFactor.cpp
+        memset.cpp)

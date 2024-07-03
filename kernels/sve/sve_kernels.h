@@ -12,6 +12,8 @@ int memcmp(const void *lhs, const void *rhs, std::size_t count);
 
 uint64_t accumulate(const uint64_t *arr, std::size_t len);
 
+void *memset(void *dest, int ch, std::size_t count);
+
 template<class T>
 T maxOps(std::size_t n_ops);
 

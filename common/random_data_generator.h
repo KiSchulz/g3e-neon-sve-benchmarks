@@ -25,9 +25,14 @@ struct RandomDataGenerator {
 
   void initArrWithRand(void *arr, std::size_t length) {
     std::generate((char *)arr, (char *)arr + length, [this]() {
-      std::uniform_int_distribution<char> uni_dist{0, 255};
-      return uni_dist(engine);
+      return getRandomInt<char>();
     });
+  }
+
+  template<class T>
+  T getRandomInt() {
+    std::uniform_int_distribution<T> uni_dist{0, 255};
+    return uni_dist(engine);
   }
 
   void initArrWithRandInRangeD(double *arr, std::size_t length, double low, double high) {

@@ -5,7 +5,8 @@ add_executable(test_driver
         memcmp_test.cpp
         nBody_test.cpp
         intersectP_test.cpp
-        accumulate_test.cpp)
+        accumulate_test.cpp
+        memset_test.cpp)
 
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
