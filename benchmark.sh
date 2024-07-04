@@ -10,6 +10,6 @@ rm -rf ./*
 cmake -E env CXX=clang++ CC=clang cmake -GNinja ..
 ninja test_driver benchmark_driver
 test_driver/test_driver --gtest_brief=1
-benchmark_driver/benchmark_driver -dev --benchmark_format=json --benchmark_out="$filename" --benchmark_context=CPU="$cpu" --benchmark_repetitions=10
+benchmark_driver/benchmark_driver -dev --benchmark_format=json --benchmark_out="$filename" --benchmark_context=CPU="$cpu" --benchmark_repetitions=10 --benchmark_report_aggregates_only=true --benchmark_time_unit=ns
 
 cp "$filename" "../../Thesis/data/"
