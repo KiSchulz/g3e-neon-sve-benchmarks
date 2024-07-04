@@ -10,8 +10,8 @@
 
 #include "accumulate_benchmark.h"
 #include "memcmp_benchmark.h"
-#include "memcpy_benchmark.h"
 #include "memset_benchmark.h"
+#include "memcpy_benchmark.h"
 
 #include "nBody_step_benchmark.h"
 #include "intersectP_benchmark.h"
