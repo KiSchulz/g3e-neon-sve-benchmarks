@@ -36,12 +36,12 @@ template <class... Args> void BM_aligned_memcpy(benchmark::State &state, Args &&
 
 BENCHMARK_CAPTURE(BM_aligned_memcpy, Ref, &ref::memcpy, BM_memcpy_args::buff_alignment)
 ->RangeMultiplier(BM_memcpy_args::range_multiplier)
-    ->Range(BM_memcpy_args::min_len, BM_memcpy_args::max_len);
+    ->Range(BM_memcpy_args::min_len, BM_memcpy_args::max_len)->ThreadPerCpu();
 BENCHMARK_CAPTURE(BM_aligned_memcpy, Neon, &neon::memcpy, BM_memcpy_args::buff_alignment)
 ->RangeMultiplier(BM_memcpy_args::range_multiplier)
-    ->Range(BM_memcpy_args::min_len, BM_memcpy_args::max_len);
+    ->Range(BM_memcpy_args::min_len, BM_memcpy_args::max_len)->ThreadPerCpu();
 BENCHMARK_CAPTURE(BM_aligned_memcpy, SVE, &sve::memcpy, BM_memcpy_args::buff_alignment)
 ->RangeMultiplier(BM_memcpy_args::range_multiplier)
-    ->Range(BM_memcpy_args::min_len, BM_memcpy_args::max_len);
+    ->Range(BM_memcpy_args::min_len, BM_memcpy_args::max_len)->ThreadPerCpu();
 
 #endif // NEON_SVE_BENCH_MEMCPY_BENCHMARK_H

@@ -19,7 +19,7 @@
 int main(int argc, char **argv) {
   const auto start = std::chrono::high_resolution_clock::now();
 
-  if (argc == 1 || (argc >= 2 && std::strcmp(argv[1], "-def") == 0)) {
+  if (argc == 1 || (argc >= 2 && std::strcmp(argv[1], "-dev") == 0)) {
     std::vector<std::string> customArgv = {
         argv[0], "--benchmark_counters_tabular=true",
         //"--benchmark_perf_counters=CYCLES,INSTRUCTIONS,BRANCH-MISSES",

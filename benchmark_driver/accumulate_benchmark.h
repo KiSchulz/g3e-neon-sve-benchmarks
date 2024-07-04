@@ -34,12 +34,12 @@ template <class... Args> void BM_aligned_accumulate(benchmark::State &state, Arg
 
 BENCHMARK_CAPTURE(BM_aligned_accumulate, Ref, &ref::accumulate, BM_accumulate_args::buff_alignment)
 ->RangeMultiplier(BM_accumulate_args::range_multiplier)
-    ->Range(BM_accumulate_args::min_len, BM_accumulate_args::max_len);
+    ->Range(BM_accumulate_args::min_len, BM_accumulate_args::max_len)->ThreadPerCpu();
 BENCHMARK_CAPTURE(BM_aligned_accumulate, Neon, &neon::accumulate, BM_accumulate_args::buff_alignment)
   ->RangeMultiplier(BM_accumulate_args::range_multiplier)
-  ->Range(BM_accumulate_args::min_len, BM_accumulate_args::max_len);
+  ->Range(BM_accumulate_args::min_len, BM_accumulate_args::max_len)->ThreadPerCpu();
 BENCHMARK_CAPTURE(BM_aligned_accumulate, SVE, &sve::accumulate, BM_accumulate_args::buff_alignment)
 ->RangeMultiplier(BM_accumulate_args::range_multiplier)
-    ->Range(BM_accumulate_args::min_len, BM_accumulate_args::max_len);
+    ->Range(BM_accumulate_args::min_len, BM_accumulate_args::max_len)->ThreadPerCpu();
 
 #endif // NEON_SVE_BENCH_ACCUMULATE_BENCHMARK_H

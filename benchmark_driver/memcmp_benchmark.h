@@ -43,12 +43,12 @@ template <class... Args> void BM_aligned_memcmp(benchmark::State &state, Args &&
 
 BENCHMARK_CAPTURE(BM_aligned_memcmp, Ref, &ref::memcmp, BM_memcmp_args::buff_alignment)
     ->RangeMultiplier(BM_memcmp_args::range_multiplier)
-    ->Range(BM_memcmp_args::min_prefix_length, BM_memcmp_args::max_prefix_length);
+    ->Range(BM_memcmp_args::min_prefix_length, BM_memcmp_args::max_prefix_length)->ThreadPerCpu();
 BENCHMARK_CAPTURE(BM_aligned_memcmp, Neon, &neon::memcmp, BM_memcmp_args::buff_alignment)
     ->RangeMultiplier(BM_memcmp_args::range_multiplier)
-    ->Range(BM_memcmp_args::min_prefix_length, BM_memcmp_args::max_prefix_length);
+    ->Range(BM_memcmp_args::min_prefix_length, BM_memcmp_args::max_prefix_length)->ThreadPerCpu();
 BENCHMARK_CAPTURE(BM_aligned_memcmp, SVE, &sve::memcmp, BM_memcmp_args::buff_alignment)
     ->RangeMultiplier(BM_memcmp_args::range_multiplier)
-    ->Range(BM_memcmp_args::min_prefix_length, BM_memcmp_args::max_prefix_length);
+    ->Range(BM_memcmp_args::min_prefix_length, BM_memcmp_args::max_prefix_length)->ThreadPerCpu();
 
 #endif // NEON_SVE_BENCH_MEMCMP_BENCHMARK_H

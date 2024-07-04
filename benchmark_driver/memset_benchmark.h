@@ -34,12 +34,12 @@ template <class... Args> void BM_aligned_memset(benchmark::State &state, Args &&
 
 BENCHMARK_CAPTURE(BM_aligned_memset, Ref, &ref::memset, BM_memset_args::buff_alignment)
     ->RangeMultiplier(BM_memset_args::range_multiplier)
-    ->Range(BM_memset_args::min_len, BM_memset_args::max_len);
+    ->Range(BM_memset_args::min_len, BM_memset_args::max_len)->ThreadPerCpu();
 BENCHMARK_CAPTURE(BM_aligned_memset, Neon, &neon::memset, BM_memset_args::buff_alignment)
     ->RangeMultiplier(BM_memset_args::range_multiplier)
-    ->Range(BM_memset_args::min_len, BM_memset_args::max_len);
+    ->Range(BM_memset_args::min_len, BM_memset_args::max_len)->ThreadPerCpu();
 BENCHMARK_CAPTURE(BM_aligned_memset, SVE, &sve::memset, BM_memset_args::buff_alignment)
     ->RangeMultiplier(BM_memset_args::range_multiplier)
-    ->Range(BM_memset_args::min_len, BM_memset_args::max_len);
+    ->Range(BM_memset_args::min_len, BM_memset_args::max_len)->ThreadPerCpu();
 
 #endif // NEON_SVE_BENCH_MEMSET_BENCHMARK_H
