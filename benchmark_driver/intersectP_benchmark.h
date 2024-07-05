@@ -34,8 +34,6 @@ template <class... Args> void BM_intersectP(benchmark::State &state, Args &&...a
   gen.initAABBArr(baseBox, boxes, numBoxes);
   gen.initRayArr(baseBox, orig, dir, numRays);
 
-  std::size_t c = 0;
-
   for (auto _ : state) {
     std::size_t boxOffset = 0;
     for (std::size_t i = 0; i < numRays; i++) {
