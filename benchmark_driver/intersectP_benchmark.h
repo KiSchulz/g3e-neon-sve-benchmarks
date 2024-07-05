@@ -34,15 +34,18 @@ template <class... Args> void BM_intersectP(benchmark::State &state, Args &&...a
   gen.initAABBArr(baseBox, boxes, numBoxes);
   gen.initRayArr(baseBox, orig, dir, numRays);
 
+  std::size_t c = 0;
+
   for (auto _ : state) {
     std::size_t boxOffset = 0;
     for (std::size_t i = 0; i < numRays; i++) {
+      Vec3f invDir = dir[i].invertElements();
+      int dirIsNeg[3];
+      for (std::size_t k = 0; k < 3; k++) {
+        dirIsNeg[k] = invDir[k] < 0 ? 1 : 0;
+      }
       for (std::size_t j = 0; j < rayReuseRatio; j += width, boxOffset += width) {
-        Vec3f invDir = dir[i].invertElements();
-        int dirIsNeg[3];
-        for (std::size_t k = 0; k < 3; k++) {
-          dirIsNeg[k] = invDir[k] < 0 ? 1 : 0;
-        }
+        c += width;
         func(boxes + boxOffset, &orig[i], &tMax, &invDir, dirIsNeg, results);
 
         benchmark::DoNotOptimize(results);
@@ -50,6 +53,8 @@ template <class... Args> void BM_intersectP(benchmark::State &state, Args &&...a
       }
     }
   }
+
+  state.counters["num_intersects"] = (double)numBoxes;
 
   delete[] boxes;
   delete[] orig;

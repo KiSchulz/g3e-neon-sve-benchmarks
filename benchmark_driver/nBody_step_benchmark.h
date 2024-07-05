@@ -31,6 +31,8 @@ template <class... Args> void BM_nBody_step(benchmark::State &state, Args &&...a
     benchmark::ClobberMemory();
   }
 
+  state.counters["num_bodies"] = (double)n;
+
   for (auto &i : buff) {
     delete[] i;
   }
