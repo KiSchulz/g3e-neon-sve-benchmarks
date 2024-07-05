@@ -7,8 +7,8 @@
 
 struct BM_memset_args {
   static constexpr int64_t min_len = 1;       // in byte
-  static constexpr int64_t max_len = 1 << 29; // in byte
-  static constexpr int range_multiplier = 4;
+  static constexpr int64_t max_len = 1 << 26; // in byte
+  static constexpr int range_multiplier = 2;
   static constexpr uint64_t buff_alignment = 4096;
 };
 
