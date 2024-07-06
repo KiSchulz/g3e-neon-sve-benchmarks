@@ -14,13 +14,18 @@ template <class... Args> void BM_vectorLoadFactor(benchmark::State &state, Args 
 
   state.SetLabel("inst = " + std::to_string(num_ops) + " = 2^" + std::to_string((int)std::log2(num_ops)));
 
+  const std::size_t maxActiveElements = state.range(0);
+
   for (auto _ : state) {
-    float result = func(num_ops, state.range(0));
+    float result = func(num_ops, maxActiveElements);
     benchmark::DoNotOptimize(result);
   }
+
+  state.counters["active_elements"] = (double)maxActiveElements;
 }
 
-BENCHMARK_CAPTURE(BM_vectorLoadFactor, SVE<float32_t>, &sve::vectorLoadFactor<float>, BM_vectorLoadFactor_args::num_inst)
+BENCHMARK_CAPTURE(BM_vectorLoadFactor, SVE<float32_t>, &sve::vectorLoadFactor<float>,
+                  BM_vectorLoadFactor_args::num_inst)
     ->DenseRange(1, 8);
 
 #endif // NEON_SVE_BENCH_VECTORLOADFACTOR_BENCHMARK_H
