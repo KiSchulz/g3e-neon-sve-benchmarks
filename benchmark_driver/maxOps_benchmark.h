@@ -17,7 +17,7 @@ template <class... Args> void BM_maxOps(benchmark::State &state, Args &&...args)
     benchmark::DoNotOptimize(result);
   }
 
-  state.counters["ops_per_cycle"] = (state.iterations() * num_ops) / state.counters["CYCLES"];
+  addOpsPerCycle(state, num_ops);
   addClockCounter(state);
 }
 

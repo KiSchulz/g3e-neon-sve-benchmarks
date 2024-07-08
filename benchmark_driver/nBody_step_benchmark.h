@@ -32,6 +32,8 @@ template <class... Args> void BM_nBody_step(benchmark::State &state, Args &&...a
   }
 
   state.counters["num_bodies"] = (double)n;
+  addByteCounters(state, 144 * n + 32 * n * n);
+  addOpsPerCycle(state, 12 * n + 19 * n * n);
 
   for (auto &i : buff) {
     delete[] i;
@@ -48,10 +50,10 @@ BENCHMARK_CAPTURE(BM_nBody_step, SVE, &sve::nBody_step<false>, BM_nBody_step_arg
     ->RangeMultiplier(BM_nBody_step_args::range_multiplier)
     ->Range(BM_nBody_step_args::min_num_Bodies, BM_nBody_step_args::max_num_Bodies);
 BENCHMARK_CAPTURE(BM_nBody_step, Neon_fastMath, &neon::nBody_step<true>, BM_nBody_step_args::buff_alignment)
-->RangeMultiplier(BM_nBody_step_args::range_multiplier)
+    ->RangeMultiplier(BM_nBody_step_args::range_multiplier)
     ->Range(BM_nBody_step_args::min_num_Bodies, BM_nBody_step_args::max_num_Bodies);
 BENCHMARK_CAPTURE(BM_nBody_step, SVE_fastMath, &sve::nBody_step<true>, BM_nBody_step_args::buff_alignment)
-->RangeMultiplier(BM_nBody_step_args::range_multiplier)
+    ->RangeMultiplier(BM_nBody_step_args::range_multiplier)
     ->Range(BM_nBody_step_args::min_num_Bodies, BM_nBody_step_args::max_num_Bodies);
 
 #endif // NEON_SVE_BENCH_NBODY_STEP_BENCHMARK_H

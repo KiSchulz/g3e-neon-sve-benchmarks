@@ -42,6 +42,7 @@ template <class... Args> void BM_intersectP(benchmark::State &state, Args &&...a
       for (std::size_t k = 0; k < 3; k++) {
         dirIsNeg[k] = invDir[k] < 0 ? 1 : 0;
       }
+
       for (std::size_t j = 0; j < rayReuseRatio; j += width, boxOffset += width) {
         func(boxes + boxOffset, &orig[i], &tMax, &invDir, dirIsNeg, results);
 

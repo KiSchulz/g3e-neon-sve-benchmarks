@@ -21,4 +21,9 @@ void addByteCounters(benchmark::State &state, uint64_t bytes_per_iter) {
       (double)state.threads() * (double)state.iterations() * (double)bytes_per_iter, benchmark::Counter::kIsRate};
 }
 
+void addOpsPerCycle(benchmark::State &state, uint64_t ops_per_iter) {
+  // TODO fix this counter when used in multithreaded context
+  state.counters["ops_per_cycle"] = (double)((int64_t)state.iterations() * ops_per_iter) / state.counters["CYCLES"];
+}
+
 #endif // NEON_SVE_BENCH_BENCHMARK_COMMON_H
