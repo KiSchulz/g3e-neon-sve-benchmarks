@@ -4,7 +4,7 @@
 #include "benchmark_common.h"
 
 struct BM_maxOps_args {
-  static constexpr int64_t num_ops = 1ul << 30;
+  static constexpr int64_t num_ops = 1ul << 32;
 };
 
 template <class... Args> void BM_maxOps(benchmark::State &state, Args &&...args) {
