@@ -23,7 +23,8 @@ int main(int argc, char **argv) {
     std::vector<std::string> customArgv = {
         argv[0], "--benchmark_counters_tabular=true",
         //"--benchmark_perf_counters=CYCLES,INSTRUCTIONS,BRANCH-MISSES",
-        "--benchmark_perf_counters=CYCLES,INSTRUCTIONS,STALLED-CYCLES-BACKEND",
+        //"--benchmark_perf_counters=CYCLES,INSTRUCTIONS,STALLED-CYCLES-BACKEND",
+        "--benchmark_perf_counters=CYCLES,INSTRUCTIONS",
         //"--benchmark_perf_counters=CYCLES,INSTRUCTIONS,STALLED-CYCLES-FRONTEND",
         "--benchmark_display_aggregates_only=true, --benchmark_counters_tabular=true"
         /*, "--benchmark_repetitions=10"*/};

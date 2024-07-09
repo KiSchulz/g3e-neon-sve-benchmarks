@@ -14,6 +14,7 @@ uint64_t accumulate(const uint64_t *arr, std::size_t len);
 
 void *memset(void *dest, int ch, std::size_t count);
 
+template<uint32_t version = 0xffffffff>
 void *memcpy(void *dest, const void* src, std::size_t count);
 
 template<class T>

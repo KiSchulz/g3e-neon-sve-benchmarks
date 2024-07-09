@@ -29,5 +29,18 @@ public:
 TEST_P(MemcpyTest, Nullptr) { nullptrTest(GetParam()); }
 TEST_P(MemcpyTest, randomData) { randomDataTest(GetParam(), 1 << 12); }
 
-INSTANTIATE_TEST_SUITE_P(Kernels, MemcpyTest, testing::Values(&neon::memcpy, &sve::memcpy),
+INSTANTIATE_TEST_SUITE_P(Kernels, MemcpyTest, testing::Values(&neon::memcpy, &sve::memcpy<>),
                          [](const auto &paramInfo) { return paramInfo.index == 0 ? "Neon" : "SVE"; });
+
+class MemcpyTest_SVEVersions : public MemcpyTest {
+public:
+  void test_nullptr_random(Func f) {
+    nullptrTest(f);
+    randomDataTest(f, 1 << 12);
+  }
+};
+
+TEST_P(MemcpyTest_SVEVersions, test_nullptr_random) { test_nullptr_random(GetParam()); }
+INSTANTIATE_TEST_SUITE_P(Kernels, MemcpyTest_SVEVersions,
+                         testing::Values(&sve::memcpy<0>, &sve::memcpy<1>, &sve::memcpy<2>, &sve::memcpy<3>),
+                         [](const auto &paramInfo) { return std::to_string(paramInfo.index); });
