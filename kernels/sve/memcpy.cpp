@@ -6,18 +6,21 @@ template <uint32_t version> void *sve_kernels::memcpy(void *dest, const void *sr
   if constexpr (version == 0) {
     for (std::size_t i = 0; i < count; i += vl) {
       svbool_t p = svwhilelt_b8_u64(i, count);
-      svst1(p, (uint8_t *)dest + i, svld1(p, (const uint8_t *)src + i));
+      svuint8_t v = svld1(p, (const uint8_t *)src + i);
+      svst1(p, (uint8_t *)dest + i, v);
     }
   } else if (version == 1) {
     const uint64_t vLen = count - (count % vl);
     svbool_t p = svptrue_b8();
     for (std::size_t i = 0; i < vLen; i += vl) {
-      svst1(p, (uint8_t *)dest + i, svld1(p, (const uint8_t *)src + i));
+      svuint8_t v = svld1(p, (const uint8_t *)src + i);
+      svst1(p, (uint8_t *)dest + i, v);
     }
 
     for (std::size_t i = vLen; i < count; i += vl) {
       p = svwhilelt_b8_u64(i, count);
-      svst1(p, (uint8_t *)dest + i, svld1(p, (const uint8_t *)src + i));
+      svuint8_t v = svld1(p, (const uint8_t *)src + i);
+      svst1(p, (uint8_t *)dest + i, v);
     }
   } else if (version == 2) {
     constexpr uint64_t n = 4;
@@ -25,10 +28,14 @@ template <uint32_t version> void *sve_kernels::memcpy(void *dest, const void *sr
 
     svbool_t p = svptrue_b8();
     for (std::size_t i = 0; i < vLen; i += n * vl) {
-      svst1(p, (uint8_t *)dest + i + 0 * vl, svld1(p, (const uint8_t *)src + i + 0 * vl));
-      svst1(p, (uint8_t *)dest + i + 1 * vl, svld1(p, (const uint8_t *)src + i + 1 * vl));
-      svst1(p, (uint8_t *)dest + i + 2 * vl, svld1(p, (const uint8_t *)src + i + 2 * vl));
-      svst1(p, (uint8_t *)dest + i + 3 * vl, svld1(p, (const uint8_t *)src + i + 3 * vl));
+      svuint8_t v0 = svld1(p, (const uint8_t *)src + i + 0 * vl);
+      svst1(p, (uint8_t *)dest + i + 0 * vl, v0);
+      svuint8_t v1 = svld1(p, (const uint8_t *)src + i + 1 * vl);
+      svst1(p, (uint8_t *)dest + i + 1 * vl, v1);
+      svuint8_t v2 = svld1(p, (const uint8_t *)src + i + 2 * vl);
+      svst1(p, (uint8_t *)dest + i + 2 * vl, v2);
+      svuint8_t v3 = svld1(p, (const uint8_t *)src + i + 3 * vl);
+      svst1(p, (uint8_t *)dest + i + 3 * vl, v3);
     }
 
     for (std::size_t i = vLen; i < count; i += vl) {
