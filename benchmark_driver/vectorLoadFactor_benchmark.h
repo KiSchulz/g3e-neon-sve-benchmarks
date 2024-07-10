@@ -10,17 +10,18 @@ struct BM_vectorLoadFactor_args {
 template <class... Args> void BM_vectorLoadFactor(benchmark::State &state, Args &&...args) {
   const auto args_tuple = std::make_tuple(std::move(args)...);
   const auto func = std::get<0>(args_tuple);
-  const auto num_ops = std::get<1>(args_tuple);
+  const auto num_inst = std::get<1>(args_tuple);
 
-  state.SetLabel("inst = " + std::to_string(num_ops) + " = 2^" + std::to_string((int)std::log2(num_ops)));
+  state.SetLabel("inst = " + std::to_string(num_inst) + " = 2^" + std::to_string((int)std::log2(num_inst)));
 
   const std::size_t maxActiveElements = state.range(0);
 
   for (auto _ : state) {
-    float result = func(num_ops, maxActiveElements);
+    float result = func(num_inst, maxActiveElements);
     benchmark::DoNotOptimize(result);
   }
 
+  state.counters["num_inst"] = (double)num_inst;
   state.counters["active_elements"] = (double)maxActiveElements;
 }
 
