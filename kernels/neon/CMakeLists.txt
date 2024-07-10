@@ -7,4 +7,5 @@ add_library(neon_kernels
         accumulate.cpp
         maxOps.cpp
         memset.cpp
-        memcpy.cpp)
+        memcpy.cpp
+        murmur3_32.cpp)

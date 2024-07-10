@@ -27,6 +27,10 @@ std::size_t intersectPWidth();
 void intersectP(const Bounds3f *vResult, const Vec3f *rayOrig, const float *rayTMax, const Vec3f *invRayDir,
                 const int *dirIsNeg, int *result);
 
+std::size_t murmur3_32Width();
+
+void murmur3_32(const uint8_t* key, const size_t *len, uint32_t seed, uint32_t *out);
+
 } // namespace neon_kernels
 
 #endif // NEON_SVE_BENCH_NEON_KERNELS_H

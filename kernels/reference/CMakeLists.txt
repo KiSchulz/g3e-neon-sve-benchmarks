@@ -6,4 +6,5 @@ add_library(reference_kernels
         intersectP.cpp
         accumulate.cpp
         memset.cpp
-        memcpy.cpp)
+        memcpy.cpp
+        murmur3_32.cpp)

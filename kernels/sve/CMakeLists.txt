@@ -8,4 +8,5 @@ add_library(sve_kernels
         maxOps.cpp
         vectorLoadFactor.cpp
         memset.cpp
-        memcpy.cpp)
+        memcpy.cpp
+        murmur3_32.cpp)
