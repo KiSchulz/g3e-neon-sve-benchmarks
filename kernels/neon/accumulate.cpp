@@ -33,6 +33,11 @@ uint64_t neon_kernels::accumulate(const uint64_t *arr, std::size_t len) {
     vAcc7 = vaddq_u64(vAcc7, v7);
   }
 
+  uint64_t acc = 0;
+  for (std::size_t i = vLen; i < len; i++) {
+    acc += arr[i];
+  }
+
   vAcc0 = vaddq_u64(vAcc0, vAcc1);
   vAcc2 = vaddq_u64(vAcc2, vAcc3);
   vAcc4 = vaddq_u64(vAcc4, vAcc5);
@@ -42,11 +47,7 @@ uint64_t neon_kernels::accumulate(const uint64_t *arr, std::size_t len) {
   vAcc4 = vaddq_u64(vAcc4, vAcc6);
 
   vAcc0 = vaddq_u64(vAcc0, vAcc4);
-  uint64_t acc = vaddvq_u64(vAcc0);
-
-  for (std::size_t i = vLen; i < len; i++) {
-    acc += arr[i];
-  }
+  acc += vaddvq_u64(vAcc0);
 
   return acc;
 }

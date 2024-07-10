@@ -51,28 +51,4 @@ int sve_kernels::memcmp(const void *in_lhs, const void *in_rhs, std::size_t coun
   }
 
   return 0;
-
-  //__asm__("cmp x2, #0x1\n"
-  //        "b.lt _rz\n"
-  //        "add x8, x0, x2\n"
-  //        "whilelo p0.b, x0, x8\n"
-  //        "_l1:\n"
-  //        "ldff1b {z1.b}, p0/z, [x0, xzr]\n"
-  //        "ldff1b {z0.b}, p0/z, [x1, xzr]\n"
-  //        "cmpne p1.b, p0/z, z1.b, z0.b\n"
-  //        "b.ne _rne\n"
-  //        "add x0, x0, #0x20\n"
-  //        "add x1, x1, #0x20\n"
-  //        "whilelo p0.b, x0, x8\n"
-  //        "b.first _l1\n"
-  //        "_rz:\n"
-  //        "mov w0, wzr\n"
-  //        "ret\n"
-  //        "_rne:\n"
-  //        "brka p0.b, p0/z, p1.b\n"
-  //        "lastb w8, p0, z1.b\n"
-  //        "lastb w9, p0, z0.b\n"
-  //        "and w8, w8, #0xff\n"
-  //        "sub w0, w8, w9, uxtb\n"
-  //        "ret\n");
 }
