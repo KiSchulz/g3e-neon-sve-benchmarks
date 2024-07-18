@@ -2,8 +2,6 @@
 
 #include <cstring>
 
-std::size_t reference_kernels::murmur3_32Width() { return 1; }
-
 // source wikipedia https://en.wikipedia.org/wiki/MurmurHash (accessed: 10-07-2024)
 inline uint32_t murmur_32_scramble(uint32_t k) {
   k *= 0xcc9e2d51;
@@ -12,11 +10,11 @@ inline uint32_t murmur_32_scramble(uint32_t k) {
   return k;
 }
 
-void reference_kernels::murmur3_32(const uint8_t *key, const size_t *len, uint32_t seed, uint32_t *out) {
+uint32_t reference_kernels::murmur3_32(const uint8_t *key, size_t len, uint32_t seed) {
   uint32_t h = seed;
   uint32_t k;
   /* Read in groups of 4. */
-  for (size_t i = *len >> 2; i; i--) {
+  for (size_t i = len >> 2; i; i--) {
     // Here is a source of differing results across endiannesses.
     // A swap here has no effects on hash properties though.
     memcpy(&k, key, sizeof(uint32_t));
@@ -27,7 +25,7 @@ void reference_kernels::murmur3_32(const uint8_t *key, const size_t *len, uint32
   }
   /* Read the rest. */
   k = 0;
-  for (size_t i = *len & 3; i; i--) {
+  for (size_t i = len & 3; i; i--) {
     k <<= 8;
     k |= key[i - 1];
   }
@@ -36,11 +34,11 @@ void reference_kernels::murmur3_32(const uint8_t *key, const size_t *len, uint32
   // we use. Swaps only apply when the memory is copied in a chunk.
   h ^= murmur_32_scramble(k);
   /* Finalize. */
-  h ^= *len;
+  h ^= len;
   h ^= h >> 16;
   h *= 0x85ebca6b;
   h ^= h >> 13;
   h *= 0xc2b2ae35;
   h ^= h >> 16;
-  *out = h;
+  return h;
 }

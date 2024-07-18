@@ -30,8 +30,8 @@ struct RandomDataGenerator {
   }
 
   template<class T>
-  T getRandomInt() {
-    std::uniform_int_distribution<T> uni_dist{0, 255};
+  T getRandomInt(T min = std::numeric_limits<T>::min(), T max = std::numeric_limits<T>::max()) {
+    std::uniform_int_distribution<T> uni_dist{min, max};
     return uni_dist(engine);
   }
 

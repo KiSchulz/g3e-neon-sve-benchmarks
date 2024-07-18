@@ -10,8 +10,8 @@ public:
   void randomDataTest(Func f, std::size_t max_size) {
     char *arr = new char[max_size];
     for (std::size_t i = 0; i < max_size; i++) {
-      const int defaultValue = getRandomInt<int>();
-      const int ch = getRandomInt<int>();
+      const int defaultValue = getRandomInt<int>(0, 255);
+      const int ch = getRandomInt<int>(0, 255);
       ref::memset(arr, defaultValue, max_size);
 
       f(arr, ch, i);
