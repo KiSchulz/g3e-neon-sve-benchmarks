@@ -7,37 +7,57 @@ __always_inline uint32_t murmur_32_scramble(uint32_t k) {
   return k;
 }
 
+__always_inline uint32_t mergeIntoHash(uint32_t h, const uint32_t *buff, uint64_t len) {
+#pragma clang loop unroll_count(4)
+  for (uint64_t j = 0; j < len; j++) {
+    h ^= buff[j];
+    h = (h << 13) | (h >> 19);
+    h = h * 5 + 0xe6546b64;
+  }
+  return h;
+}
+
 uint32_t sve_kernels::murmur3_32(const uint8_t *key, size_t len, uint32_t seed) {
-  constexpr uint64_t n = 1;
+  constexpr uint64_t n = 2;
   const uint64_t vl = svcntw();
   const uint64_t len32 = len / sizeof(uint32_t);
   const uint64_t vLen = len32 - (len32 % (vl * n));
-  svbool_t vTrue = svptrue_b32();
+  const svbool_t vTrue = svptrue_b32();
+  auto *buff = (uint32_t *)alloca(sizeof(uint32_t) * vl * n);
 
   uint32_t h = seed;
   for (uint64_t i = 0; i < vLen; i += vl * n) {
-    svuint32_t k = svld1_u32(vTrue, ((const uint32_t*)key) + i);
+    svuint32_t k0 = svld1_u32(vTrue, ((const uint32_t *)key) + i + 0 * vl);
+    svuint32_t k1 = svld1_u32(vTrue, ((const uint32_t *)key) + i + 1 * vl);
 
-    k = svmul_n_u32_x(vTrue, k, 0xcc9e2d51);
-    k = svorr_x(vTrue, svlsl_n_u32_x(vTrue, k, 15), svlsr_n_u32_x(vTrue, k, 17));
-    k = svmul_n_u32_x(vTrue, k, 0x1b873593);
+    k0 = svmul_n_u32_x(vTrue, k0, 0xcc9e2d51);
+    k1 = svmul_n_u32_x(vTrue, k1, 0xcc9e2d51);
+    k0 = svorr_x(vTrue, svlsl_n_u32_x(vTrue, k0, 15), svlsr_n_u32_x(vTrue, k0, 17));
+    k1 = svorr_x(vTrue, svlsl_n_u32_x(vTrue, k1, 15), svlsr_n_u32_x(vTrue, k1, 17));
+    k0 = svmul_n_u32_x(vTrue, k0, 0x1b873593);
+    k1 = svmul_n_u32_x(vTrue, k1, 0x1b873593);
 
-    svbool_t pred = svpfalse();
-#pragma clang loop unroll_count(4)
-    for (uint64_t j = 0; j < vl; j++) {
-      pred = svpnext_b32(vTrue, pred);
-      uint32_t k_j = svlastb_u32(pred, k);
+    svst1(vTrue, buff + 0 * vl, k0);
+    svst1(vTrue, buff + 1 * vl, k1);
 
-      h ^= k_j;
-      h = (h << 13) | (h >> 19);
-      h = h * 5 + 0xe6546b64;
-    }
+    h = mergeIntoHash(h, buff, vl * n);
+
+    //    svbool_t pred = svpfalse();
+    // #pragma clang loop unroll_count(4)
+    //    for (uint64_t j = 0; j < vl; j++) {
+    //      pred = svpnext_b32(vTrue, pred);
+    //      uint32_t k_j = svlastb_u32(pred, k0);
+    //
+    //      h ^= k_j;
+    //      h = (h << 13) | (h >> 19);
+    //      h = h * 5 + 0xe6546b64;
+    //    }
   }
 
   uint32_t k;
   // 1. loop-tail
   for (std::size_t i = vLen; i < len32; i++) {
-    k = *(((const uint32_t*)key) + i);
+    k = *(((const uint32_t *)key) + i);
     h ^= murmur_32_scramble(k);
 
     h = (h << 13) | (h >> 19);
