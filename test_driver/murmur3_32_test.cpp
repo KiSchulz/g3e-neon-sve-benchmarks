@@ -29,7 +29,7 @@ public:
 
 TEST_P(Murmur3_32Test, doesNotCrash) { doesNotCrash(GetParam()); }
 TEST_P(Murmur3_32Test, randomFiexedSizeInput) { randomFixedSizeInput(GetParam()); }
-TEST_P(Murmur3_32Test, randomLargeInput) { randomVariableSizeInput(GetParam(), 1 << 10); }
+TEST_P(Murmur3_32Test, randomLargeInput) { randomVariableSizeInput(GetParam(), 1 << 13); }
 
 INSTANTIATE_TEST_SUITE_P(Kernels, Murmur3_32Test, testing::Values(&neon::murmur3_32, &sve::murmur3_32),
                          [](const auto &paramInfo) { return paramInfo.index == 0 ? "Neon" : "SVE"; });

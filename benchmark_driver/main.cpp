@@ -5,16 +5,22 @@
 
 #include "hello_benchmark.h"
 
+// synthetic benchmarks
 #include "maxOps_benchmark.h"
 #include "vectorLoadFactor_benchmark.h"
 
+// memory benchmarks
 #include "accumulate_benchmark.h"
 #include "memcmp_benchmark.h"
 #include "memset_benchmark.h"
 #include "memcpy_benchmark.h"
 
+// float benchmarks
 #include "nBody_step_benchmark.h"
 #include "intersectP_benchmark.h"
+
+// int benchmarks
+#include "murmur3_32_benchmark.h"
 
 int main(int argc, char **argv) {
   const auto start = std::chrono::high_resolution_clock::now();
