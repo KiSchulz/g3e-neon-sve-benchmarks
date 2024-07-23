@@ -14,7 +14,7 @@ uint64_t accumulate(const uint64_t *arr, std::size_t len);
 
 void *memset(void *dest, int ch, std::size_t count);
 
-void *memcpy(void *dest, const void* src, std::size_t count);
+void *memcpy(void *dest, const void *src, std::size_t count);
 
 template <class T> T maxOps(std::size_t n_ops);
 
@@ -27,7 +27,9 @@ std::size_t intersectPWidth();
 void intersectP(const Bounds3f *vResult, const Vec3f *rayOrig, const float *rayTMax, const Vec3f *invRayDir,
                 const int *dirIsNeg, int *result);
 
-uint32_t murmur3_32(const uint8_t* key, size_t len, uint32_t seed);
+uint32_t murmur3_32(const uint8_t *key, size_t len, uint32_t seed);
+
+uint64_t murmur64A(const uint8_t *key, size_t len, uint64_t seed);
 
 } // namespace neon_kernels
 

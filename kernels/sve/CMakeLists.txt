@@ -9,4 +9,6 @@ add_library(sve_kernels
         vectorLoadFactor.cpp
         memset.cpp
         memcpy.cpp
-        murmur3_32.cpp)
+        murmur3_32.cpp
+        murmur64A.cpp
+)

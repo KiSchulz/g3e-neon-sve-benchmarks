@@ -22,14 +22,16 @@ uint32_t neon_kernels::murmur3_32(const uint8_t *key, size_t len, uint32_t seed)
   constexpr std::size_t numEl = reg_width / sizeof(uint32_t);
   const std::size_t len32 = len / sizeof(uint32_t);
   const std::size_t vLen = len32 - (len32 % (numEl * n));
+
+  const auto *data = (const uint32_t *)key;
   auto *buff = (uint32_t *)alloca(sizeof(uint32_t) * numEl * n);
 
   uint32_t h = seed;
   for (std::size_t i = 0; i < vLen; i += numEl * n) {
-    uint32x4_t k0 = vld1q_u32(((const uint32_t *)key) + i + 0 * numEl);
-    uint32x4_t k1 = vld1q_u32(((const uint32_t *)key) + i + 1 * numEl);
-    uint32x4_t k2 = vld1q_u32(((const uint32_t *)key) + i + 2 * numEl);
-    uint32x4_t k3 = vld1q_u32(((const uint32_t *)key) + i + 3 * numEl);
+    uint32x4_t k0 = vld1q_u32(data + i + 0 * numEl);
+    uint32x4_t k1 = vld1q_u32(data + i + 1 * numEl);
+    uint32x4_t k2 = vld1q_u32(data + i + 2 * numEl);
+    uint32x4_t k3 = vld1q_u32(data + i + 3 * numEl);
 
     k0 = vmulq_n_u32(k0, 0xcc9e2d51);
     k1 = vmulq_n_u32(k1, 0xcc9e2d51);
@@ -55,7 +57,7 @@ uint32_t neon_kernels::murmur3_32(const uint8_t *key, size_t len, uint32_t seed)
   uint32_t k;
   // 1. loop-tail
   for (std::size_t i = vLen; i < len32; i++) {
-    k = *(((const uint32_t *)key) + i);
+    k = *(data + i);
     h ^= murmur_32_scramble(k);
 
     h = (h << 13) | (h >> 19);

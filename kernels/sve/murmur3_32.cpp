@@ -23,12 +23,14 @@ uint32_t sve_kernels::murmur3_32(const uint8_t *key, size_t len, uint32_t seed) 
   const uint64_t len32 = len / sizeof(uint32_t);
   const uint64_t vLen = len32 - (len32 % (vl * n));
   const svbool_t vTrue = svptrue_b32();
+
+  const auto *data = (const uint32_t*)key;
   auto *buff = (uint32_t *)alloca(sizeof(uint32_t) * vl * n);
 
   uint32_t h = seed;
   for (uint64_t i = 0; i < vLen; i += vl * n) {
-    svuint32_t k0 = svld1_u32(vTrue, ((const uint32_t *)key) + i + 0 * vl);
-    svuint32_t k1 = svld1_u32(vTrue, ((const uint32_t *)key) + i + 1 * vl);
+    svuint32_t k0 = svld1_u32(vTrue, data + i + 0 * vl);
+    svuint32_t k1 = svld1_u32(vTrue, data + i + 1 * vl);
 
     k0 = svmul_n_u32_x(vTrue, k0, 0xcc9e2d51);
     k1 = svmul_n_u32_x(vTrue, k1, 0xcc9e2d51);
@@ -41,23 +43,12 @@ uint32_t sve_kernels::murmur3_32(const uint8_t *key, size_t len, uint32_t seed) 
     svst1(vTrue, buff + 1 * vl, k1);
 
     h = mergeIntoHash(h, buff, vl * n);
-
-    //    svbool_t pred = svpfalse();
-    // #pragma clang loop unroll_count(4)
-    //    for (uint64_t j = 0; j < vl; j++) {
-    //      pred = svpnext_b32(vTrue, pred);
-    //      uint32_t k_j = svlastb_u32(pred, k0);
-    //
-    //      h ^= k_j;
-    //      h = (h << 13) | (h >> 19);
-    //      h = h * 5 + 0xe6546b64;
-    //    }
   }
 
   uint32_t k;
   // 1. loop-tail
   for (std::size_t i = vLen; i < len32; i++) {
-    k = *(((const uint32_t *)key) + i);
+    k = *(data + i);
     h ^= murmur_32_scramble(k);
 
     h = (h << 13) | (h >> 19);

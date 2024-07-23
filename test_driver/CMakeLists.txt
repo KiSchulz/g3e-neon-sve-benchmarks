@@ -8,7 +8,9 @@ add_executable(test_driver
         accumulate_test.cpp
         memset_test.cpp
         memcpy_test.cpp
-        murmur3_32_test.cpp)
+        murmur3_32_test.cpp
+        murmur64A_test.cpp
+)
 
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 

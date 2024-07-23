@@ -21,6 +21,7 @@
 
 // int benchmarks
 #include "murmur3_32_benchmark.h"
+#include "murmur64A_benchmark.h"
 
 int main(int argc, char **argv) {
   const auto start = std::chrono::high_resolution_clock::now();

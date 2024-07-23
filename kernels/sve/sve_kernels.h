@@ -31,6 +31,8 @@ void intersectP(const Bounds3f *b, const Vec3f *rayOrig, const float *rayTMax, c
 
 uint32_t murmur3_32(const uint8_t* key, size_t len, uint32_t seed);
 
+uint64_t murmur64A(const uint8_t *key, size_t len, uint64_t seed);
+
 // --- SVE only functions ---
 template <class T>
 T vectorLoadFactor(std::size_t n_inst, std::size_t maxActiveLanes);

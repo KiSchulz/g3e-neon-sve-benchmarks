@@ -7,4 +7,6 @@ add_library(reference_kernels
         accumulate.cpp
         memset.cpp
         memcpy.cpp
-        murmur3_32.cpp)
+        murmur3_32.cpp
+        murmur64A.cpp
+)
