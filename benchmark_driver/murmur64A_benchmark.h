@@ -7,7 +7,7 @@
 
 struct BM_murmur64A_args {
   static constexpr int64_t min_length = 1;       // in byte
-  static constexpr int64_t max_length = 1 << 26; // in byte
+  static constexpr int64_t max_length = 1 << 28; // in byte
   static constexpr int range_multiplier = 4;
   static constexpr uint64_t buff_alignment = 4096;
 };

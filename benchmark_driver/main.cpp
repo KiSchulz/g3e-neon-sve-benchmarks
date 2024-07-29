@@ -3,8 +3,6 @@
 #include <cstring>
 #include <iostream>
 
-#include "hello_benchmark.h"
-
 // synthetic benchmarks
 #include "maxOps_benchmark.h"
 #include "vectorLoadFactor_benchmark.h"
