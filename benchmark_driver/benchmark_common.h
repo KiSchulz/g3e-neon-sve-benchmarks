@@ -17,6 +17,8 @@ void addClockCounter(benchmark::State &state) {
 
 void addByteCounters(benchmark::State &state, uint64_t bytes_per_iter) {
   state.counters["bytes"] = (double)bytes_per_iter;
+  state.counters["bytes/s"] = benchmark::Counter{
+      (double)state.threads() * (double)state.iterations() * (double)bytes_per_iter, benchmark::Counter::kIsRate};
   state.SetBytesProcessed((int64_t)bytes_per_iter * state.iterations());
 }
 
