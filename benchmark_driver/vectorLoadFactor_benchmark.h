@@ -29,4 +29,8 @@ BENCHMARK_CAPTURE(BM_vectorLoadFactor, SVE<float32_t>, &sve::vectorLoadFactor<fl
                   BM_vectorLoadFactor_args::num_inst)
     ->DenseRange(1, 8);
 
+BENCHMARK_CAPTURE(BM_vectorLoadFactor, SVE<uint32_t>, &sve::vectorLoadFactor<uint32_t>,
+                  BM_vectorLoadFactor_args::num_inst)
+->DenseRange(1, 8);
+
 #endif // NEON_SVE_BENCH_VECTORLOADFACTOR_BENCHMARK_H
