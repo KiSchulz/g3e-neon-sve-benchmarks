@@ -159,6 +159,15 @@ template <> uint64_t sve_kernels::maxOps(std::size_t n_ops) {
   const svuint64_t fac7 = svdup_u64(17);
 
   for (std::size_t i = 0; i < n_ops; i += ops_per_iter) {
+    //acc0 = svmad_u64_x(vTrue, acc0, fac0, fac7);
+    //acc1 = svmad_u64_x(vTrue, acc1, fac1, fac6);
+    //acc2 = svmad_u64_x(vTrue, acc2, fac2, fac5);
+    //acc3 = svmad_u64_x(vTrue, acc3, fac3, fac4);
+    //acc4 = svmad_u64_x(vTrue, acc4, fac4, fac3);
+    //acc5 = svmad_u64_x(vTrue, acc5, fac5, fac2);
+    //acc6 = svmad_u64_x(vTrue, acc6, fac6, fac1);
+    //acc7 = svmad_u64_x(vTrue, acc7, fac7, fac0);
+
     acc0 = svadd_u64_x(vTrue, acc0, fac0);
     acc1 = svadd_u64_x(vTrue, acc1, fac1);
     acc2 = svadd_u64_x(vTrue, acc2, fac2);
