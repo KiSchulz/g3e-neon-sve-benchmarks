@@ -86,7 +86,7 @@ template <> float64_t neon_kernels::maxOps(std::size_t n_ops) {
 
 template <> uint32_t neon_kernels::maxOps(std::size_t n_ops) {
   constexpr std::size_t num_instruction_per_iteration = 8;
-  constexpr std::size_t ops_per_instruction_per_lane = 1;
+  constexpr std::size_t ops_per_instruction_per_lane = 2;
   constexpr std::size_t num_lanes = 4;
   const std::size_t ops_per_iter = num_instruction_per_iteration * ops_per_instruction_per_lane * num_lanes;
 
@@ -109,23 +109,14 @@ template <> uint32_t neon_kernels::maxOps(std::size_t n_ops) {
   const uint32x4_t fac7 = vdupq_n_u32(53);
 
   for (std::size_t i = 0; i < n_ops; i += ops_per_iter) {
-    // acc0 = vmlaq_u32(fac0, fac7, acc0);
-    // acc1 = vmlaq_u32(fac1, fac6, acc1);
-    // acc2 = vmlaq_u32(fac2, fac5, acc2);
-    // acc3 = vmlaq_u32(fac3, fac4, acc3);
-    // acc4 = vmlaq_u32(fac4, fac3, acc4);
-    // acc5 = vmlaq_u32(fac5, fac2, acc5);
-    // acc6 = vmlaq_u32(fac6, fac1, acc6);
-    // acc7 = vmlaq_u32(fac7, fac0, acc7);
-
-    acc0 = vmulq_u32(acc0, fac0);
-    acc1 = vmulq_u32(acc1, fac1);
-    acc2 = vmulq_u32(acc2, fac2);
-    acc3 = vmulq_u32(acc3, fac3);
-    acc4 = vmulq_u32(acc4, fac4);
-    acc5 = vmulq_u32(acc5, fac5);
-    acc6 = vmulq_u32(acc6, fac6);
-    acc7 = vmulq_u32(acc7, fac7);
+    acc0 = vmlaq_u32(fac0, fac7, acc0);
+    acc1 = vmlaq_u32(fac1, fac6, acc1);
+    acc2 = vmlaq_u32(fac2, fac5, acc2);
+    acc3 = vmlaq_u32(fac3, fac4, acc3);
+    acc4 = vmlaq_u32(fac4, fac3, acc4);
+    acc5 = vmlaq_u32(fac5, fac2, acc5);
+    acc6 = vmlaq_u32(fac6, fac1, acc6);
+    acc7 = vmlaq_u32(fac7, fac0, acc7);
   }
 
   acc0 = vaddq_u32(acc0, acc1);
