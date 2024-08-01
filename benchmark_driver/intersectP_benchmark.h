@@ -10,7 +10,7 @@
 
 struct BM_intersectP_args {
   static constexpr int64_t min_numBoxes = 64;
-  static constexpr int64_t max_numBoxes = 2 << 16;
+  static constexpr int64_t max_numBoxes = 1 << 16;
   static constexpr int64_t ray_reuse_ratio = 32;
   static constexpr int range_multiplier = 4;
   static constexpr uint64_t buff_alignment = 4096;

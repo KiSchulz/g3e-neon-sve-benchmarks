@@ -20,7 +20,7 @@ template <class... Args> void BM_murmur64A(benchmark::State &state, Args &&...ar
   const std::size_t len = state.range(0);
 
   static RandomDataGenerator gen;
-  auto *key = new (std::align_val_t(std::get<1>(args_tuple))) uint8_t [len];
+  auto *key = new (std::align_val_t(std::get<1>(args_tuple))) uint8_t[len];
   gen.initArrWithRand(key, len);
   const auto seed = gen.getRandomInt<uint64_t>();
 
@@ -36,13 +36,16 @@ template <class... Args> void BM_murmur64A(benchmark::State &state, Args &&...ar
 }
 
 BENCHMARK_CAPTURE(BM_murmur64A, Ref, &ref::murmur64A, BM_murmur64A_args::buff_alignment)
-->RangeMultiplier(BM_murmur64A_args::range_multiplier)
-    ->Range(BM_murmur64A_args::min_length, BM_murmur64A_args::max_length * std::thread::hardware_concurrency());
+    ->RangeMultiplier(BM_murmur64A_args::range_multiplier)
+    ->Range(BM_murmur64A_args::min_length,
+            std::min(BM_murmur64A_args::max_length *std::thread::hardware_concurrency(), 1l << 32));
 BENCHMARK_CAPTURE(BM_murmur64A, Neon, &neon::murmur64A, BM_murmur64A_args::buff_alignment)
-->RangeMultiplier(BM_murmur64A_args::range_multiplier)
-    ->Range(BM_murmur64A_args::min_length, BM_murmur64A_args::max_length * std::thread::hardware_concurrency());
+    ->RangeMultiplier(BM_murmur64A_args::range_multiplier)
+    ->Range(BM_murmur64A_args::min_length,
+            std::min(BM_murmur64A_args::max_length *std::thread::hardware_concurrency(), 1l << 32));
 BENCHMARK_CAPTURE(BM_murmur64A, SVE, &sve::murmur64A, BM_murmur64A_args::buff_alignment)
-->RangeMultiplier(BM_murmur64A_args::range_multiplier)
-    ->Range(BM_murmur64A_args::min_length, BM_murmur64A_args::max_length * std::thread::hardware_concurrency());
+    ->RangeMultiplier(BM_murmur64A_args::range_multiplier)
+    ->Range(BM_murmur64A_args::min_length,
+            std::min(BM_murmur64A_args::max_length *std::thread::hardware_concurrency(), 1l << 32));
 
 #endif // NEON_SVE_BENCH_MURMUR64A_BENCHMARK_H
