@@ -5,10 +5,12 @@
 
 #include "common/random_data_generator.h"
 
+#include <thread>
+
 struct BM_nBody_step_args {
   static constexpr int64_t min_num_Bodies = 1;
-  static constexpr int64_t max_num_Bodies = 8192;
-  static constexpr int range_multiplier = 2;
+  static constexpr int64_t max_num_Bodies = 1 << 14;
+  static constexpr int range_multiplier = 4;
   static constexpr uint64_t buff_alignment = 4096;
 };
 
@@ -42,18 +44,18 @@ template <class... Args> void BM_nBody_step(benchmark::State &state, Args &&...a
 
 BENCHMARK_CAPTURE(BM_nBody_step, Ref, &ref::nBody_step, BM_nBody_step_args::buff_alignment)
     ->RangeMultiplier(BM_nBody_step_args::range_multiplier)
-    ->Range(BM_nBody_step_args::min_num_Bodies, BM_nBody_step_args::max_num_Bodies);
+    ->Range(BM_nBody_step_args::min_num_Bodies, BM_nBody_step_args::max_num_Bodies * std::thread::hardware_concurrency());
 BENCHMARK_CAPTURE(BM_nBody_step, Neon, &neon::nBody_step<false>, BM_nBody_step_args::buff_alignment)
     ->RangeMultiplier(BM_nBody_step_args::range_multiplier)
-    ->Range(BM_nBody_step_args::min_num_Bodies, BM_nBody_step_args::max_num_Bodies);
+    ->Range(BM_nBody_step_args::min_num_Bodies, BM_nBody_step_args::max_num_Bodies * std::thread::hardware_concurrency());
 BENCHMARK_CAPTURE(BM_nBody_step, SVE, &sve::nBody_step<false>, BM_nBody_step_args::buff_alignment)
     ->RangeMultiplier(BM_nBody_step_args::range_multiplier)
-    ->Range(BM_nBody_step_args::min_num_Bodies, BM_nBody_step_args::max_num_Bodies);
+    ->Range(BM_nBody_step_args::min_num_Bodies, BM_nBody_step_args::max_num_Bodies * std::thread::hardware_concurrency());
 BENCHMARK_CAPTURE(BM_nBody_step, Neon_fastMath, &neon::nBody_step<true>, BM_nBody_step_args::buff_alignment)
     ->RangeMultiplier(BM_nBody_step_args::range_multiplier)
-    ->Range(BM_nBody_step_args::min_num_Bodies, BM_nBody_step_args::max_num_Bodies);
+    ->Range(BM_nBody_step_args::min_num_Bodies, BM_nBody_step_args::max_num_Bodies * std::thread::hardware_concurrency());
 BENCHMARK_CAPTURE(BM_nBody_step, SVE_fastMath, &sve::nBody_step<true>, BM_nBody_step_args::buff_alignment)
     ->RangeMultiplier(BM_nBody_step_args::range_multiplier)
-    ->Range(BM_nBody_step_args::min_num_Bodies, BM_nBody_step_args::max_num_Bodies);
+    ->Range(BM_nBody_step_args::min_num_Bodies, BM_nBody_step_args::max_num_Bodies * std::thread::hardware_concurrency());
 
 #endif // NEON_SVE_BENCH_NBODY_STEP_BENCHMARK_H

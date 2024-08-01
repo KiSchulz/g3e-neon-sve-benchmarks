@@ -5,6 +5,8 @@
 
 #include "common/random_data_generator.h"
 
+#include <thread>
+
 struct BM_murmur3_32_args {
   static constexpr int64_t min_length = 1;       // in byte
   static constexpr int64_t max_length = 1 << 28; // in byte
@@ -35,12 +37,12 @@ template <class... Args> void BM_murmur3_32(benchmark::State &state, Args &&...a
 
 BENCHMARK_CAPTURE(BM_murmur3_32, Ref, &ref::murmur3_32, BM_murmur3_32_args::buff_alignment)
 ->RangeMultiplier(BM_murmur3_32_args::range_multiplier)
-    ->Range(BM_murmur3_32_args::min_length, BM_murmur3_32_args::max_length);
+    ->Range(BM_murmur3_32_args::min_length, BM_murmur3_32_args::max_length * std::thread::hardware_concurrency());
 BENCHMARK_CAPTURE(BM_murmur3_32, Neon, &neon::murmur3_32, BM_murmur3_32_args::buff_alignment)
 ->RangeMultiplier(BM_murmur3_32_args::range_multiplier)
-    ->Range(BM_murmur3_32_args::min_length, BM_murmur3_32_args::max_length);
+    ->Range(BM_murmur3_32_args::min_length, BM_murmur3_32_args::max_length * std::thread::hardware_concurrency());
 BENCHMARK_CAPTURE(BM_murmur3_32, SVE, &sve::murmur3_32, BM_murmur3_32_args::buff_alignment)
 ->RangeMultiplier(BM_murmur3_32_args::range_multiplier)
-    ->Range(BM_murmur3_32_args::min_length, BM_murmur3_32_args::max_length);
+    ->Range(BM_murmur3_32_args::min_length, BM_murmur3_32_args::max_length * std::thread::hardware_concurrency());
 
 #endif // NEON_SVE_BENCH_MURMUR3_32_BENCHMARK_H

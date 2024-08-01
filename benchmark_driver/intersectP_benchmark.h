@@ -6,11 +6,13 @@
 #include "common/random_data_generator.h"
 #include "common/types.h"
 
+#include <thread>
+
 struct BM_intersectP_args {
   static constexpr int64_t min_numBoxes = 64;
-  static constexpr int64_t max_numBoxes = 2 << 15;
+  static constexpr int64_t max_numBoxes = 2 << 16;
   static constexpr int64_t ray_reuse_ratio = 32;
-  static constexpr int range_multiplier = 2;
+  static constexpr int range_multiplier = 4;
   static constexpr uint64_t buff_alignment = 4096;
 };
 
@@ -62,14 +64,14 @@ template <class... Args> void BM_intersectP(benchmark::State &state, Args &&...a
 BENCHMARK_CAPTURE(BM_intersectP, Ref, &ref::intersectP, ref::intersectPWidth(), BM_intersectP_args::ray_reuse_ratio,
                   BM_intersectP_args::buff_alignment)
     ->RangeMultiplier(BM_intersectP_args::range_multiplier)
-    ->Range(BM_intersectP_args::min_numBoxes, BM_intersectP_args::max_numBoxes);
+    ->Range(BM_intersectP_args::min_numBoxes, BM_intersectP_args::max_numBoxes * std::thread::hardware_concurrency());
 BENCHMARK_CAPTURE(BM_intersectP, Neon, &neon::intersectP, neon::intersectPWidth(), BM_intersectP_args::ray_reuse_ratio,
                   BM_intersectP_args::buff_alignment)
     ->RangeMultiplier(BM_intersectP_args::range_multiplier)
-    ->Range(BM_intersectP_args::min_numBoxes, BM_intersectP_args::max_numBoxes);
+    ->Range(BM_intersectP_args::min_numBoxes, BM_intersectP_args::max_numBoxes * std::thread::hardware_concurrency());
 BENCHMARK_CAPTURE(BM_intersectP, SVE, &sve::intersectP, sve::intersectPWidth(), BM_intersectP_args::ray_reuse_ratio,
                   BM_intersectP_args::buff_alignment)
     ->RangeMultiplier(BM_intersectP_args::range_multiplier)
-    ->Range(BM_intersectP_args::min_numBoxes, BM_intersectP_args::max_numBoxes);
+    ->Range(BM_intersectP_args::min_numBoxes, BM_intersectP_args::max_numBoxes * std::thread::hardware_concurrency());
 
 #endif // NEON_SVE_BENCH_INTERSECTP_BENCHMARK_H
