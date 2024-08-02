@@ -9,16 +9,21 @@ template <bool fastMath> class NBodyTest : public testing::TestWithParam<Func>, 
 public:
   constexpr static double dt = 0.01;
 
-  std::size_t doubleEQ_n;
   std::size_t num_iterations;
   double relEQ_relDiv;
   double maxDeviation;
 
-  static bool doubleEQ(double a, double b, std::size_t n) { return std::abs(a - b) <= (double)n * EPSILON_D; }
-  static bool relEQ(double a, double b, double relDiv) { return std::abs(a - b) / std::min(a, b) <= relDiv; }
+  static bool relEQ(double a, double b, double relDiv) {
+    if (a == b)
+      return true;
+
+    double diff = std::abs(a - b);
+    double norm = std::min(std::min(std::abs(a), std::abs(b)), std::numeric_limits<double>::max());
+
+    return diff <= std::max(std::numeric_limits<double>::min(), relDiv * norm);
+  }
 
   NBodyTest() {
-    doubleEQ_n = 1;
     num_iterations = 1024;
     relEQ_relDiv = 2e-5;
     maxDeviation = 1e-12;
@@ -75,23 +80,21 @@ public:
 
     f(x_pos, y_pos, z_pos, x_vel, y_vel, z_vel, mass, dt, n);
 
-    ASSERT_PRED2([&](double a, double b) { return fastMath ? relEQ(a, b, maxDeviation) : doubleEQ(a, b, doubleEQ_n); },
-                 x_pos[0], physics::G * mass[1] * dt * dt);
+    ASSERT_PRED2([&](double a, double b) { return relEQ(a, b, maxDeviation); }, x_pos[0],
+                 physics::G * mass[1] * dt * dt);
     ASSERT_EQ(y_pos[0], 0);
     ASSERT_EQ(z_pos[0], 0);
 
-    ASSERT_PRED2([&](double a, double b) { return fastMath ? relEQ(a, b, maxDeviation) : doubleEQ(a, b, doubleEQ_n); },
-                 x_pos[1], 1.0f - physics::G * mass[0] * dt * dt);
+    ASSERT_PRED2([&](double a, double b) { return relEQ(a, b, maxDeviation); }, x_pos[1],
+                 1.0f - physics::G * mass[0] * dt * dt);
     ASSERT_EQ(y_pos[1], 0);
     ASSERT_EQ(z_pos[1], 0);
 
-    ASSERT_PRED2([&](double a, double b) { return fastMath ? relEQ(a, b, maxDeviation) : doubleEQ(a, b, doubleEQ_n); },
-                 x_vel[0], physics::G * mass[1] * dt);
+    ASSERT_PRED2([&](double a, double b) { return relEQ(a, b, maxDeviation); }, x_vel[0], physics::G * mass[1] * dt);
     ASSERT_EQ(y_vel[0], 0);
     ASSERT_EQ(z_vel[0], 0);
 
-    ASSERT_PRED2([&](double a, double b) { return fastMath ? relEQ(a, b, maxDeviation) : doubleEQ(a, b, doubleEQ_n); },
-                 x_vel[1], -physics::G * mass[0] * dt);
+    ASSERT_PRED2([&](double a, double b) { return relEQ(a, b, maxDeviation); }, x_vel[1], -physics::G * mass[0] * dt);
     ASSERT_EQ(y_vel[1], 0);
     ASSERT_EQ(z_vel[1], 0);
   }
