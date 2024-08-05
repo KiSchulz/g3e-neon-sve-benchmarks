@@ -3,11 +3,11 @@
 int neon_kernels::memcmp(const void *in_lhs, const void *in_rhs, std::size_t count) {
   const auto *lhs = (const uint64_t *)in_lhs;
   const auto *rhs = (const uint64_t *)in_rhs;
-
-  const auto *lhs_end = (const uint64_t *)((const uint8_t *)in_lhs + count - (count % reg_width));
-
   constexpr uint64_t n = 2;
   constexpr uint64_t numEl = (reg_width / sizeof(*lhs));
+
+  const auto *lhs_end = (const uint64_t *)((const uint8_t *)in_lhs + count - (count % (n * reg_width)));
+
   for (; lhs < lhs_end; lhs += numEl * n, rhs += numEl * n) {
     // load the data
     const uint64x2_t l0 = vld1q_u64(lhs + 0 * numEl);
